@@ -12,7 +12,13 @@ interface CustomQuestionsScreenProps {
   onBack: () => void;
 }
 
-type StepPhase = 'idle' | 'forcing_yes' | 'approved' | 'numeric_followup' | 'post_banner';
+type Choice = 'yes' | 'no';
+type StepPhase =
+  | 'idle'
+  | 'forcing_opposite'
+  | 'approved'
+  | 'numeric_followup'
+  | 'post_banner';
 
 export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
   seed,
@@ -22,6 +28,8 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
   const questions = useMemo(() => buildQuestionSequence(seed), [seed]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [phase, setPhase] = useState<StepPhase>('idle');
+  const [clickedChoice, setClickedChoice] = useState<Choice | null>(null);
+  const [forcedChoice, setForcedChoice] = useState<Choice | null>(null);
   const [warningMsg, setWarningMsg] = useState<string | null>(null);
   const [secanucasInput, setSecanucasInput] = useState<string>('2');
   const [recordedAnswers, setRecordedAnswers] = useState<Record<string, boolean>>({});
@@ -40,69 +48,94 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
     return () => clearTimers();
   }, []);
 
-  const advanceToNextQuestion = (updatedAnswers: Record<string, boolean>, secCount?: number) => {
+  const advanceToNextQuestion = (
+    updatedAnswers: Record<string, boolean>,
+    secCount?: number
+  ) => {
     clearTimers();
     if (currentIdx + 1 >= totalQ) {
-      const parsed = Math.max(0, parseInt(secCount !== undefined ? String(secCount) : secanucasInput, 10) || 2);
+      const parsed = Math.max(
+        0,
+        parseInt(secCount !== undefined ? String(secCount) : secanucasInput, 10) || 2
+      );
       onComplete({
         secanucasRequested: parsed,
         answersById: updatedAnswers,
       });
     } else {
       setPhase('idle');
+      setClickedChoice(null);
+      setForcedChoice(null);
       setWarningMsg(null);
       setCurrentIdx((prev) => prev + 1);
     }
   };
 
-  const finalizeYesApproval = () => {
+  const finalizeOppositeApproval = (targetChoice: Choice) => {
     if (!currentQ) return;
     soundEngine.playStamp();
-    const updated = { ...recordedAnswers, [currentQ.id]: true };
+    const updated = {
+      ...recordedAnswers,
+      [currentQ.id]: targetChoice === 'yes',
+    };
     setRecordedAnswers(updated);
     setPhase('approved');
 
     if (currentQ.requiresNumericFollowup) {
-      const t = window.setTimeout(() => {
-        setPhase('numeric_followup');
-      }, prefersReduced ? 250 : 750);
+      const t = window.setTimeout(
+        () => {
+          setPhase('numeric_followup');
+        },
+        prefersReduced ? 250 : 750
+      );
       timersRef.current.push(t);
       return;
     }
 
-    if (currentQ.postYesBanner) {
-      const t = window.setTimeout(() => {
-        setPhase('post_banner');
-      }, prefersReduced ? 250 : 650);
+    if (currentQ.postApprovalBanner) {
+      const t = window.setTimeout(
+        () => {
+          setPhase('post_banner');
+        },
+        prefersReduced ? 250 : 650
+      );
       timersRef.current.push(t);
       return;
     }
 
-    const t = window.setTimeout(() => {
-      advanceToNextQuestion(updated);
-    }, prefersReduced ? 450 : 980);
+    const t = window.setTimeout(
+      () => {
+        advanceToNextQuestion(updated);
+      },
+      prefersReduced ? 450 : 980
+    );
     timersRef.current.push(t);
   };
 
-  const handleDirectYes = () => {
-    if (phase !== 'idle') return;
-    soundEngine.unlockFromGesture();
-    finalizeYesApproval();
-  };
-
-  const handleAttemptNo = () => {
+  /**
+   * Core rule: whichever button the user clicks ('yes' or 'no'),
+   * ChiquiTap ALWAYS rejects it and auto-selects the opposite option!
+   */
+  const handleUserClickChoice = (userChoice: Choice) => {
     if (phase !== 'idle' || !currentQ) return;
+    const opposite: Choice = userChoice === 'yes' ? 'no' : 'yes';
+
     soundEngine.unlockFromGesture();
     soundEngine.playWhistle();
-    setWarningMsg(
-      currentQ.customNoWarning ??
-        'Su respuesta fue derivada al Tribunal de Disciplina. Se computa SÍ.'
-    );
-    setPhase('forcing_yes');
 
-    const t = window.setTimeout(() => {
-      finalizeYesApproval();
-    }, prefersReduced ? 350 : 1080);
+    setClickedChoice(userChoice);
+    setForcedChoice(opposite);
+    setWarningMsg(
+      userChoice === 'no' ? currentQ.warningWhenNo : currentQ.warningWhenYes
+    );
+    setPhase('forcing_opposite');
+
+    const t = window.setTimeout(
+      () => {
+        finalizeOppositeApproval(opposite);
+      },
+      prefersReduced ? 350 : 1080
+    );
     timersRef.current.push(t);
   };
 
@@ -123,32 +156,55 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
   if (!currentQ) return null;
 
   const progressPct = Math.round(((currentIdx + 1) / totalQ) * 100);
-  const mechanic = currentQ.noMechanic;
+  const mechanic = currentQ.mechanic;
 
-  // Compute dynamic No button animation when user tries to click "No"
-  const getNoButtonAnimate = () => {
-    if (phase === 'idle') {
+  // Animation for whichever button was clicked vs whichever opposite button is being forced
+  const getButtonAnimate = (btnSide: Choice) => {
+    if (phase === 'idle' || !clickedChoice || !forcedChoice) {
       return { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1 };
     }
-    if (prefersReduced) {
-      return { opacity: 0.5 };
+
+    // If this button is the OPPOSITE target being clicked by the Committee cursor
+    if (btnSide === forcedChoice) {
+      if (phase === 'forcing_opposite' && !prefersReduced) {
+        return { scale: [1, 1.07, 0.94, 1.04], opacity: 1, x: 0, y: 0, rotate: 0 };
+      }
+      return { scale: 1.03, opacity: 1, x: 0, y: 0, rotate: 0 };
     }
+
+    // Otherwise, this button is the one the user tried to click -> dodge / shrink / shake / morph!
+    if (prefersReduced) {
+      return { opacity: 0.45 };
+    }
+
+    const dir = btnSide === 'yes' ? -1 : 1; // Dodge left if 'yes' (left col), dodge right if 'no' (right col)
     switch (mechanic) {
       case 'dodge_and_cursor':
-        return { x: 46, y: 14, rotate: 9, scale: 0.9 };
-      case 'shrink_no':
+        return { x: dir * 42, y: 14, rotate: dir * 9, scale: 0.9 };
+      case 'shrink_clicked':
         return { scale: 0.34, opacity: 0.38, y: 8 };
-      case 'morph_to_yes':
-        return { rotate: [0, -6, 6, 0], scale: 1.02 };
+      case 'morph_opposite':
+        return { rotate: [0, -6, 6, 0], scale: 0.96, opacity: 0.72 };
       case 'paredes_shock':
       case 'tribunal_disciplina':
       default:
-        return { x: [-9, 9, -6, 6, -3, 0], opacity: 0.55 };
+        return { x: [-9, 9, -6, 6, -3, 0], opacity: 0.52 };
     }
   };
 
+  const yesLabel =
+    phase !== 'idle' && clickedChoice === 'yes' && mechanic === 'morph_opposite'
+      ? 'No (De Oficio)'
+      : 'Sí';
+
   const noLabel =
-    phase !== 'idle' && mechanic === 'morph_to_yes' ? 'Sí (De Oficio)' : 'No';
+    phase !== 'idle' && clickedChoice === 'no' && mechanic === 'morph_opposite'
+      ? 'Sí (De Oficio)'
+      : 'No';
+
+  // Cursor trajectory: starts over the user's clicked button, glides to the opposite button and clicks it
+  const startLeft = clickedChoice === 'yes' ? '25%' : '74%';
+  const targetLeft = forcedChoice === 'yes' ? '25%' : '74%';
 
   return (
     <main className="screen-container questions-screen">
@@ -212,7 +268,10 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
 
           {/* Numeric Follow-up for Secanucas */}
           {phase === 'numeric_followup' && currentQ.requiresNumericFollowup ? (
-            <form className="secanucas-followup-form" onSubmit={handleConfirmSecanucas}>
+            <form
+              className="secanucas-followup-form"
+              onSubmit={handleConfirmSecanucas}
+            >
               <label htmlFor="secanucas-num-input" className="followup-label">
                 {currentQ.requiresNumericFollowup.prompt}
               </label>
@@ -227,17 +286,23 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
                 autoFocus
               />
               <p className="followup-hint">
-                El Comité aplicará automáticamente el coeficiente ×2 por zona, reserva
-                interzonal, dotación de Combi Oficial y cupo de autoridades.
+                El Comité aplicará automáticamente el coeficiente ×2 por zona,
+                reserva interzonal, dotación de Combi Oficial y cupo de
+                autoridades.
               </p>
-              <button type="submit" className="btn-primary-institutional full-width">
+              <button
+                type="submit"
+                className="btn-primary-institutional full-width"
+              >
                 HOMOLOGAR Y CONTINUAR
               </button>
             </form>
-          ) : phase === 'post_banner' && currentQ.postYesBanner ? (
+          ) : phase === 'post_banner' && currentQ.postApprovalBanner ? (
             <div className="sde-confirmed-banner">
-              <div className="sde-banner-kicker">RESOLUCIÓN DE LOCALÍA INMEDIATA</div>
-              <p className="sde-banner-copy">{currentQ.postYesBanner}</p>
+              <div className="sde-banner-kicker">
+                RESOLUCIÓN DE LOCALÍA INMEDIATA
+              </div>
+              <p className="sde-banner-copy">{currentQ.postApprovalBanner}</p>
               <button
                 type="button"
                 className="btn-primary-institutional full-width"
@@ -251,47 +316,61 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
               <motion.button
                 type="button"
                 className={`answer-choice-btn is-yes ${
-                  phase === 'forcing_yes' || phase === 'approved' ? 'is-auto-pressed' : ''
+                  forcedChoice === 'yes' &&
+                  (phase === 'forcing_opposite' || phase === 'approved')
+                    ? 'is-auto-pressed'
+                    : ''
+                } ${
+                  phase !== 'idle' &&
+                  clickedChoice === 'yes' &&
+                  mechanic === 'morph_opposite'
+                    ? 'is-morphed'
+                    : ''
                 }`}
-                animate={
-                  phase === 'forcing_yes' && !prefersReduced
-                    ? { scale: [1, 1.07, 0.95, 1.04] }
-                    : { scale: 1 }
-                }
-                transition={{ duration: 0.65 }}
-                onClick={handleDirectYes}
+                animate={getButtonAnimate('yes')}
+                transition={{ duration: 0.42 }}
+                onClick={() => handleUserClickChoice('yes')}
                 disabled={phase !== 'idle'}
               >
-                Sí
+                {yesLabel}
               </motion.button>
 
               <motion.button
                 type="button"
                 className={`answer-choice-btn is-no ${
-                  phase !== 'idle' && mechanic === 'morph_to_yes' ? 'is-morphed-yes' : ''
+                  forcedChoice === 'no' &&
+                  (phase === 'forcing_opposite' || phase === 'approved')
+                    ? 'is-auto-pressed'
+                    : ''
+                } ${
+                  phase !== 'idle' &&
+                  clickedChoice === 'no' &&
+                  mechanic === 'morph_opposite'
+                    ? 'is-morphed'
+                    : ''
                 }`}
-                animate={getNoButtonAnimate()}
-                transition={{ duration: 0.38 }}
-                onClick={handleAttemptNo}
+                animate={getButtonAnimate('no')}
+                transition={{ duration: 0.42 }}
+                onClick={() => handleUserClickChoice('no')}
                 disabled={phase !== 'idle'}
               >
                 {noLabel}
               </motion.button>
 
-              {/* Animated Committee Cursor gliding from No to Sí and clicking it */}
-              {phase === 'forcing_yes' && (
+              {/* Animated Committee Cursor gliding from clicked button to the opposite button and clicking it */}
+              {phase === 'forcing_opposite' && forcedChoice && (
                 <motion.div
                   className="committee-auto-cursor"
                   initial={
                     prefersReduced
-                      ? { left: '24%', top: '52%', opacity: 1 }
-                      : { left: '74%', top: '68%', opacity: 0, scale: 1.1 }
+                      ? { left: targetLeft, top: '52%', opacity: 1 }
+                      : { left: startLeft, top: '68%', opacity: 0, scale: 1.1 }
                   }
                   animate={
                     prefersReduced
-                      ? { left: '24%', top: '52%', opacity: 1 }
+                      ? { left: targetLeft, top: '52%', opacity: 1 }
                       : {
-                          left: ['74%', '25%', '25%'],
+                          left: [startLeft, targetLeft, targetLeft],
                           top: ['68%', '48%', '52%'],
                           opacity: [1, 1, 1],
                           scale: [1.08, 1, 0.84],
@@ -321,7 +400,11 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
             <div className="question-approved-stamp-row">
               <OfficialStamp
                 text="APROBADO POR UNANIMIDAD"
-                subtext="VOTO AFIRMATIVO REGISTRADO"
+                subtext={
+                  forcedChoice === 'no'
+                    ? 'SE COMPUTÓ: NO (POR EL COMITÉ)'
+                    : 'SE COMPUTÓ: SÍ (POR EL COMITÉ)'
+                }
                 variant="celeste"
                 rotate={-4}
               />

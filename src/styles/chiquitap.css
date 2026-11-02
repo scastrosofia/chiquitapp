@@ -759,18 +759,18 @@ input {
   color: var(--paper-ivory);
 }
 
-.answer-choice-btn.is-yes.is-auto-pressed {
-  background: var(--celeste-deep);
-  border-color: var(--ink-black);
-  color: var(--white);
-}
-
 .answer-choice-btn.is-no {
   background: var(--paper-ivory);
   color: var(--ink-black);
 }
 
-.answer-choice-btn.is-no.is-morphed-yes {
+.answer-choice-btn.is-auto-pressed {
+  background: var(--celeste-deep);
+  border-color: var(--ink-black);
+  color: var(--white);
+}
+
+.answer-choice-btn.is-morphed {
   background: var(--celeste-soft);
   color: var(--ink-black);
 }

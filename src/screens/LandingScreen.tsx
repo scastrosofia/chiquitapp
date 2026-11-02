@@ -54,12 +54,6 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ onSelectMode }) =>
           <PlannerIcon name="dron" size={22} />
         </div>
 
-        <p className="hero-institutional-lead">
-          Por decisión unánime del Comité Ejecutivo, ponemos a disposición de su
-          casamiento, cumpleaños o cena toda la transparencia de las dos zonas,
-          los cruces interzonales y la neutralidad de Santiago del Estero.
-        </p>
-
         <div className="landing-cta-stack">
           <button
             type="button"
