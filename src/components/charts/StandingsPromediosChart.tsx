@@ -1,4 +1,5 @@
 import React from 'react';
+import { COPY } from '../../content/copy';
 import type { StandingsData } from '../../engine/types';
 import { AfaStripeDivider, GoldStarsRow, PlannerIcon } from '../Icons';
 import { OfficialStamp } from '../Stamp';
@@ -14,19 +15,19 @@ export const StandingsPromediosChart: React.FC<StandingsPromediosChartProps> = (
     <section className="planner-sheet" aria-labelledby="sec-standings-title">
       <div className="sheet-header">
         <GoldStarsRow count={3} size={13} />
-        <span className="sheet-kicker">ANEXO V — COEFICIENTE TRIENAL DE ASISTENCIA</span>
+        <span className="sheet-kicker">{COPY.charts.ranking.kicker}</span>
         <h2 id="sec-standings-title" className="sheet-script-title">
-          Tabla Anual y Promedios
+          {COPY.charts.ranking.title}
         </h2>
         <AfaStripeDivider />
       </div>
 
-      {/* Mid-event Liga Champion Callout */}
+      {/* Mid-event Prize Banner */}
       <div className="liga-mid-banner">
         <PlannerIcon name="trofeo" size={26} />
         <div>
           <span className="liga-kicker">
-            TÍTULO CREADO Y ENTREGADO CON EL EVENTO EN CURSO:
+            {COPY.charts.ranking.midEventKicker}
           </span>
           <p>{standings.midEventChampionDeclaration}</p>
         </div>
@@ -36,11 +37,11 @@ export const StandingsPromediosChart: React.FC<StandingsPromediosChartProps> = (
         <table className="planner-standings-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th>SECTOR / INVITADOS</th>
-              <th>PJ</th>
-              <th>PTS</th>
-              <th>PROM.</th>
+              <th>{COPY.charts.ranking.thPos}</th>
+              <th>{COPY.charts.ranking.thSector}</th>
+              <th>{COPY.charts.ranking.thEvents}</th>
+              <th>{COPY.charts.ranking.thPoints}</th>
+              <th>{COPY.charts.ranking.thLevel}</th>
             </tr>
           </thead>
           <tbody>
@@ -76,8 +77,8 @@ export const StandingsPromediosChart: React.FC<StandingsPromediosChartProps> = (
 
         <div className="relegation-stamp-overlay">
           <OfficialStamp
-            text="DESCENSOS ANULADOS"
-            subtext="POR ESTA ÚNICA VEZ"
+            text={COPY.charts.ranking.stampRelegationAnulada}
+            subtext={COPY.charts.ranking.stampRelegationAnuladaSub}
             variant="alert"
             rotate={-5}
           />

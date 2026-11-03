@@ -1,24 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { soundEngine } from '../audio/soundEngine';
+import { COPY } from '../content/copy';
 import { AfaStripeDivider, GoldStarsRow, PlannerIcon } from '../components/Icons';
 
 interface LoadingCommitteeScreenProps {
   onComplete: () => void;
 }
 
-const STATUS_STEPS = [
-  { pct: 22, msg: 'Consultando al Comité Ejecutivo…' },
-  { pct: 54, msg: 'Dividiendo invitados en Zona A y Zona B…' },
-  { pct: 79, msg: 'Sorteando cruces interzonales en la Combi Oficial…' },
-  {
-    pct: 38,
-    msg: 'Contraorden del Comité: se amplía el padrón y se recalculan los promedios…',
-    isBackward: true,
-  },
-  { pct: 74, msg: 'Reprogramando sede a Santiago del Estero y cargando drones…' },
-  { pct: 100, msg: 'Formato homologado por unanimidad.' },
-];
+const STATUS_STEPS = COPY.loading.steps;
 
 export const LoadingCommitteeScreen: React.FC<LoadingCommitteeScreenProps> = ({
   onComplete,
@@ -53,13 +43,13 @@ export const LoadingCommitteeScreen: React.FC<LoadingCommitteeScreenProps> = ({
     <main className="screen-container loading-screen" aria-live="polite">
       <div className="loading-dossier-box">
         <GoldStarsRow count={3} size={15} />
-        <span className="sheet-kicker">PROCESAMIENTO INSTITUCIONAL</span>
+        <span className="sheet-kicker">{COPY.loading.kicker}</span>
 
         <div className="loading-icon-pulse">
           <PlannerIcon name="combi" size={42} />
         </div>
 
-        <h1 className="loading-title">Consultando al Comité Ejecutivo…</h1>
+        <h1 className="loading-title">{COPY.loading.title}</h1>
         <AfaStripeDivider />
 
         <div className="fixture-progress-track is-large">

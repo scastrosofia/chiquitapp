@@ -1,5 +1,6 @@
 import React from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { COPY } from '../content/copy';
 import type { RuleChangeResolution } from '../engine/types';
 import { AfaStripeDivider, GoldStarsRow, PlannerIcon } from './Icons';
 import { OfficialStamp } from './Stamp';
@@ -61,14 +62,14 @@ export const RuleChangeModal: React.FC<RuleChangeModalProps> = ({
             <p className="modal-body-text">{resolution.body}</p>
 
             <div className="modal-impact-box">
-              <span className="impact-kicker">IMPACTO REGLAMENTARIO INMEDIATO:</span>
+              <span className="impact-kicker">{COPY.resolutions.impactKicker}</span>
               <p>{resolution.impactSummary}</p>
             </div>
 
             <div className="modal-stamp-row">
               <OfficialStamp
-                text="RESOLUCIÓN OFICIAL"
-                subtext="COMITÉ EJECUTIVO EN COMBI"
+                text={COPY.resolutions.stampText}
+                subtext={COPY.resolutions.stampSubtext}
                 variant="celeste"
                 rotate={-4}
               />
@@ -79,7 +80,7 @@ export const RuleChangeModal: React.FC<RuleChangeModalProps> = ({
               className="btn-primary-institutional full-width"
               onClick={() => onAcceptAndApply(resolution)}
             >
-              ACATAR Y REORDENAR FORMATO
+              {COPY.resolutions.acceptBtn}
             </button>
           </motion.div>
         </motion.div>

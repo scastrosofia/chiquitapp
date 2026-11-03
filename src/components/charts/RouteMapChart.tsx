@@ -1,4 +1,5 @@
 import React from 'react';
+import { COPY } from '../../content/copy';
 import type { RouteData } from '../../engine/types';
 import { AfaStripeDivider, GoldStarsRow } from '../Icons';
 import { OfficialStamp } from '../Stamp';
@@ -12,9 +13,9 @@ export const RouteMapChart: React.FC<RouteMapChartProps> = ({ route }) => {
     <section className="planner-sheet" aria-labelledby="sec-route-title">
       <div className="sheet-header">
         <GoldStarsRow count={3} size={13} />
-        <span className="sheet-kicker">ANEXO VI — LOGÍSTICA FEDERAL OBLIGATORIA</span>
+        <span className="sheet-kicker">{COPY.charts.route.kicker}</span>
         <h2 id="sec-route-title" className="sheet-script-title">
-          Mapa de Sede &amp; Traslado
+          {COPY.charts.route.title}
         </h2>
         <AfaStripeDivider />
       </div>
@@ -77,12 +78,12 @@ export const RouteMapChart: React.FC<RouteMapChartProps> = ({ route }) => {
               x="-8"
               y="18"
               textAnchor="end"
-              fontSize="8.5"
+              fontSize="8"
               fontWeight="600"
               fontFamily="Montserrat, sans-serif"
               fill="#1A1A1A"
             >
-              TU CIUDAD (CANCELADA)
+              {COPY.charts.route.originCanceledLabel}
             </text>
           </g>
 
@@ -111,7 +112,7 @@ export const RouteMapChart: React.FC<RouteMapChartProps> = ({ route }) => {
               fontFamily="Oswald, sans-serif"
               fill="#1A1A1A"
             >
-              COMBI OFICIAL EN RUTA
+              {COPY.charts.route.combiOnRouteLabel}
             </text>
             <text
               x="22"
@@ -120,7 +121,7 @@ export const RouteMapChart: React.FC<RouteMapChartProps> = ({ route }) => {
               fontFamily="Montserrat, sans-serif"
               fill="#4A4A4A"
             >
-              (Acá se define todo)
+              {COPY.charts.route.combiOnRouteSub}
             </text>
           </g>
 
@@ -134,7 +135,6 @@ export const RouteMapChart: React.FC<RouteMapChartProps> = ({ route }) => {
               stroke="#C9A227"
               strokeWidth="1.2"
             />
-            {/* Circular stadium roof silhouette */}
             <ellipse cx="0" cy="1" rx="9" ry="5.5" fill="#FFFCF8" stroke="#1A1A1A" strokeWidth="1.3" />
             <ellipse cx="0" cy="0" rx="5" ry="2.5" fill="none" stroke="#75AADB" strokeWidth="1" />
             <polygon
@@ -149,7 +149,7 @@ export const RouteMapChart: React.FC<RouteMapChartProps> = ({ route }) => {
               fontFamily="Oswald, sans-serif"
               fill="#1A1A1A"
             >
-              SANTIAGO DEL ESTERO
+              {COPY.charts.route.destinationCityLabel}
             </text>
             <text
               x="19"
@@ -159,7 +159,7 @@ export const RouteMapChart: React.FC<RouteMapChartProps> = ({ route }) => {
               fontFamily="Montserrat, sans-serif"
               fill="#1A1A1A"
             >
-              ESTADIO ÚNICO MADRE DE CIUDADES
+              {COPY.charts.route.destinationVenueLabel}
             </text>
           </g>
         </svg>
@@ -167,23 +167,23 @@ export const RouteMapChart: React.FC<RouteMapChartProps> = ({ route }) => {
 
       <div className="route-metrics-grid">
         <div className="route-metric-cell">
-          <span className="metric-label">DISTANCIA HOMOLOGADA</span>
+          <span className="metric-label">{COPY.charts.route.metricDistanceLabel}</span>
           <strong className="metric-value">{route.distanceKm} KM</strong>
         </div>
         <div className="route-metric-cell">
-          <span className="metric-label">TIEMPO ESTIMADO</span>
-          <strong className="metric-value is-highlight">NO IMPORTA</strong>
+          <span className="metric-label">{COPY.charts.route.metricTimeLabel}</span>
+          <strong className="metric-value is-highlight">{route.estimatedTime}</strong>
         </div>
       </div>
 
       <div className="route-stopover-note">
-        <strong>ESCALA OBLIGATORIA:</strong> {route.combiStopover}
+        <strong>{COPY.charts.route.stopoverLabel}</strong> {route.combiStopover}
       </div>
 
       <div className="sheet-stamp-footer-right">
         <OfficialStamp
-          text="SEDE CONFIRMADA"
-          subtext="CANCHA NEUTRAL PERPETUA"
+          text={COPY.charts.route.stampConfirmed}
+          subtext={COPY.charts.route.stampConfirmedSub}
           variant="ink"
           rotate={-3}
         />

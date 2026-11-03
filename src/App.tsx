@@ -15,8 +15,8 @@ const DEFAULT_SIMPLE_ANSWERS: UserAnswers = {
   answersById: {
     invitas_paredes: true,
     invitas_dimaria: true,
+    amigo_salon: true,
     show_drones: true,
-    en_tu_ciudad: true,
     necesitas_secanucas: true,
   },
 };

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { soundEngine } from '../../audio/soundEngine';
+import { COPY } from '../../content/copy';
 import type { CountdownMonthBlock } from '../../engine/types';
 import { AfaStripeDivider, GoldStarsRow } from '../Icons';
 
@@ -27,9 +28,9 @@ export const CountdownChecklistChart: React.FC<CountdownChecklistChartProps> = (
     <section className="planner-sheet" aria-labelledby="sec-countdown-title">
       <div className="sheet-header">
         <GoldStarsRow count={3} size={13} />
-        <span className="sheet-kicker">ANEXO II — CUENTA REGRESIVA & CONTROL</span>
+        <span className="sheet-kicker">{COPY.charts.countdown.kicker}</span>
         <h2 id="sec-countdown-title" className="sheet-script-title">
-          Countdown &amp; Checklist
+          {COPY.charts.countdown.title}
         </h2>
         <AfaStripeDivider />
       </div>

@@ -1,23 +1,28 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import type { BracketData } from '../../engine/types';
+import { COPY } from '../../content/copy';
+import type { BracketData, EventType } from '../../engine/types';
 import { AfaStripeDivider, GoldStarsRow, PlannerIcon } from '../Icons';
 import { OfficialStamp } from '../Stamp';
 
 interface FixtureBracketChartProps {
   bracket: BracketData;
+  eventType?: EventType;
 }
 
 export const FixtureBracketChart: React.FC<FixtureBracketChartProps> = ({
   bracket,
+  eventType = 'casamiento',
 }) => {
+  const chartTitle = COPY.charts.pathBracket.titleByEvent[eventType] || 'Camino a los Premios';
+
   return (
     <section className="planner-sheet" aria-labelledby="sec-bracket-title">
       <div className="sheet-header">
         <GoldStarsRow count={3} size={13} />
-        <span className="sheet-kicker">ANEXO IV — CUADRO ELIMINATORIO Y DERIVACIÓN</span>
+        <span className="sheet-kicker">{COPY.charts.pathBracket.kicker}</span>
         <h2 id="sec-bracket-title" className="sheet-script-title">
-          Fixture &amp; Playoffs
+          {chartTitle}
         </h2>
         <AfaStripeDivider />
       </div>
@@ -25,8 +30,8 @@ export const FixtureBracketChart: React.FC<FixtureBracketChartProps> = ({
       {bracket.isModifiedByResolution && (
         <div className="sheet-stamp-banner">
           <OfficialStamp
-            text="FORMATO MODIFICADO"
-            subtext="NUEVA SUPERCOPA AGREGADA"
+            text={COPY.charts.pathBracket.stampModified}
+            subtext={COPY.charts.pathBracket.stampModifiedSub}
             variant="gold"
             rotate={3}
           />
@@ -34,15 +39,14 @@ export const FixtureBracketChart: React.FC<FixtureBracketChartProps> = ({
       )}
 
       <div className="scroll-hint-bar" aria-hidden="true">
-        <span>← DESLIZÁ EL CUADRO DE LLAVES →</span>
+        <span>{COPY.charts.pathBracket.scrollHint}</span>
       </div>
 
-      {/* Contained horizontal scroll container — never overflows main viewport */}
       <div className="bracket-scroll-viewport">
         <div className="bracket-canvas-grid">
-          {/* Column 1: Octavos / Primera Ronda */}
+          {/* Column 1: Ronda Preliminar de Mesas */}
           <div className="bracket-col">
-            <div className="bracket-col-header">INSTANCIA PRELIMINAR</div>
+            <div className="bracket-col-header">{COPY.charts.pathBracket.colPrelim}</div>
             <div className="bracket-matches-stack">
               {bracket.octavos.map((m) => (
                 <div
@@ -70,9 +74,9 @@ export const FixtureBracketChart: React.FC<FixtureBracketChartProps> = ({
             </svg>
           </div>
 
-          {/* Column 2: Semifinales (En Combi + Pase Directo ★) */}
+          {/* Column 2: Desempates en Combi */}
           <div className="bracket-col">
-            <div className="bracket-col-header">SEMIFINALES EN COMBI</div>
+            <div className="bracket-col-header">{COPY.charts.pathBracket.colCombi}</div>
             <div className="bracket-matches-stack is-centered">
               {bracket.semifinales.map((s) => (
                 <div key={s.id} className="bracket-match-card is-semi-card">
@@ -97,9 +101,9 @@ export const FixtureBracketChart: React.FC<FixtureBracketChartProps> = ({
             </svg>
           </div>
 
-          {/* Column 3: Final del Evento (No consagra campeón) */}
+          {/* Column 3: Definición Simbólica */}
           <div className="bracket-col">
-            <div className="bracket-col-header">FINAL SIMBÓLICA</div>
+            <div className="bracket-col-header">{COPY.charts.pathBracket.colFinalSimbolica}</div>
             <div className="bracket-matches-stack is-centered">
               <div className="bracket-match-card is-final-simbolica">
                 <span className="match-code">{bracket.finalDelEvento.title}</span>
@@ -133,7 +137,7 @@ export const FixtureBracketChart: React.FC<FixtureBracketChartProps> = ({
                 fontFamily="Oswald, sans-serif"
                 fill="#1A1A1A"
               >
-                DERIVA A
+                {COPY.charts.pathBracket.derivaTag}
               </text>
             </svg>
           </div>
@@ -141,7 +145,7 @@ export const FixtureBracketChart: React.FC<FixtureBracketChartProps> = ({
           {/* Column 4: External Tournament where the REAL champion is decided */}
           <div className="bracket-col is-external-col">
             <div className="bracket-col-header is-gold-header">
-              TORNEO EXTERNO DEFINITORIO
+              {COPY.charts.pathBracket.colExternal}
             </div>
             <div className="bracket-matches-stack is-centered">
               <motion.div layout className="external-cup-box">

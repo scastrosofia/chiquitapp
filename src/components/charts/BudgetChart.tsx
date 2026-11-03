@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { COPY } from '../../content/copy';
 import type { BudgetData } from '../../engine/types';
 import { AfaStripeDivider, GoldStarsRow } from '../Icons';
 import { OfficialStamp } from '../Stamp';
@@ -21,9 +22,9 @@ export const BudgetChart: React.FC<BudgetChartProps> = ({ budget }) => {
     <section className="planner-sheet" aria-labelledby="sec-budget-title">
       <div className="sheet-header">
         <GoldStarsRow count={3} size={13} />
-        <span className="sheet-kicker">ANEXO VII — DISTRIBUCIÓN PATRIMONIAL</span>
+        <span className="sheet-kicker">{COPY.charts.budget.kicker}</span>
         <h2 id="sec-budget-title" className="sheet-script-title">
-          Presupuesto Oficial
+          {COPY.charts.budget.title}
         </h2>
         <AfaStripeDivider />
       </div>
@@ -31,8 +32,8 @@ export const BudgetChart: React.FC<BudgetChartProps> = ({ budget }) => {
       {budget.isModifiedByResolution && (
         <div className="sheet-stamp-banner">
           <OfficialStamp
-            text="FORMATO MODIFICADO"
-            subtext="PARTIDA EXTRA DE SECANUCAS"
+            text={COPY.charts.budget.stampModified}
+            subtext={COPY.charts.budget.stampModifiedSub}
             variant="celeste"
             rotate={-3}
           />
@@ -88,11 +89,11 @@ export const BudgetChart: React.FC<BudgetChartProps> = ({ budget }) => {
               y="90"
               textAnchor="middle"
               fontFamily="Montserrat, sans-serif"
-              fontSize="7"
+              fontSize="6.8"
               fontWeight="600"
               fill="#4A4A4A"
             >
-              DRONES + SECANUCAS
+              {COPY.charts.budget.donutCenterTitle}
             </text>
           </svg>
         </div>
@@ -118,40 +119,40 @@ export const BudgetChart: React.FC<BudgetChartProps> = ({ budget }) => {
         </div>
       </div>
 
-      {/* Absurd Secanucas Formula Audit Box */}
+      {/* Secanucas Formula Audit Box */}
       <div className="secanucas-audit-box">
         <div className="audit-title">
-          LIQUIDACIÓN TÉCNICA DE SECANUCAS HOMOLOGADOS
+          {COPY.charts.budget.auditTitle}
         </div>
         <div className="audit-rows">
           <div className="audit-row">
-            <span>Solicitados originalmente por el usuario:</span>
+            <span>{COPY.charts.budget.auditRequestedByUser}</span>
             <strong>{secanucas.requestedByUser} u.</strong>
           </div>
           <div className="audit-row">
-            <span>Multiplicador ×2 por Zona + Coeficiente Térmico SDE:</span>
+            <span>{COPY.charts.budget.auditPerGroupFactor}</span>
             <strong>+{secanucas.perZoneFactor.toLocaleString('es-AR')} u.</strong>
           </div>
           <div className="audit-row">
-            <span>Reserva obligatoria para Fecha Interzonal:</span>
+            <span>{COPY.charts.budget.auditInterzonalReserve}</span>
             <strong>+{secanucas.interzonalReserve.toLocaleString('es-AR')} u.</strong>
           </div>
           <div className="audit-row">
-            <span>Dotación exclusiva de Combi Oficial Polarizada:</span>
+            <span>{COPY.charts.budget.auditCombiEscort}</span>
             <strong>+{secanucas.combiEscort.toLocaleString('es-AR')} u.</strong>
           </div>
           <div className="audit-row">
-            <span>Cupo protocolar del Comité Ejecutivo:</span>
+            <span>{COPY.charts.budget.auditCommitteeQuota}</span>
             <strong>+{secanucas.committeeQuota.toLocaleString('es-AR')} u.</strong>
           </div>
           {secanucas.emergencyAddition > 0 && (
             <div className="audit-row is-emergency">
-              <span>Refuerzo por Resolución en Curso:</span>
+              <span>{COPY.charts.budget.auditEmergencyAddition}</span>
               <strong>+{secanucas.emergencyAddition.toLocaleString('es-AR')} u.</strong>
             </div>
           )}
           <div className="audit-row is-total">
-            <span>TOTAL DE SECANUCAS A ADQUIRIR:</span>
+            <span>{COPY.charts.budget.auditTotal}</span>
             <strong>{secanucas.totalHomologated.toLocaleString('es-AR')} UNIDADES</strong>
           </div>
         </div>

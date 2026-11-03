@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
 import { soundEngine } from '../../audio/soundEngine';
+import { COPY } from '../../content/copy';
 import type { DroneFormation } from '../../engine/types';
 import { AfaStripeDivider, GoldStarsRow, PlannerIcon } from '../Icons';
 
@@ -387,9 +388,9 @@ export const DroneShowCanvas: React.FC<DroneShowCanvasProps> = ({
     >
       <div className="sheet-header">
         <GoldStarsRow count={3} size={13} />
-        <span className="sheet-kicker">ANEXO IX — CIERRE AEROESPACIAL OBLIGATORIO</span>
+        <span className="sheet-kicker">{COPY.charts.drones.kicker}</span>
         <h2 id="sec-drones-title" className="sheet-script-title">
-          Show de Drones
+          {COPY.charts.drones.title}
         </h2>
         <AfaStripeDivider />
       </div>

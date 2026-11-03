@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { COPY } from '../../content/copy';
 import type { ZonesData } from '../../engine/types';
 import { AfaStripeDivider, GoldStarsRow, PlannerIcon } from '../Icons';
 import { OfficialStamp } from '../Stamp';
@@ -11,14 +12,10 @@ interface ZonesDiagramChartProps {
   inflationJustification: string;
 }
 
-/**
- * Renders an editorial seating-dot matrix representing hundreds of guests per Zone.
- */
 const GuestDotsMatrix: React.FC<{ count: number; accent: 'ink' | 'celeste' }> = ({
   count,
   accent,
 }) => {
-  // Cap visual dots at 64 so it stays crisp and legible while representing the full count
   const visualDots = Math.min(64, Math.max(15, Math.round(count / 8)));
   const cols = 8;
   const rows = Math.ceil(visualDots / cols);
@@ -54,7 +51,7 @@ const GuestDotsMatrix: React.FC<{ count: number; accent: 'ink' | 'celeste' }> = 
         })}
       </svg>
       <span className="dots-caption">
-        {count} INVITADOS ({visualDots < count ? `escala 1:${Math.round(count / visualDots)}` : 'escala 1:1'})
+        {COPY.charts.distribution.scaleCaption(count, visualDots)}
       </span>
     </div>
   );
@@ -70,9 +67,9 @@ export const ZonesDiagramChart: React.FC<ZonesDiagramChartProps> = ({
     <section className="planner-sheet" aria-labelledby="sec-zones-title">
       <div className="sheet-header">
         <GoldStarsRow count={3} size={13} />
-        <span className="sheet-kicker">ANEXO III — DISTRIBUCIÓN DE LOCALÍAS Y SECTORES</span>
+        <span className="sheet-kicker">{COPY.charts.distribution.kicker}</span>
         <h2 id="sec-zones-title" className="sheet-script-title">
-          Diagrama de Zonas
+          {COPY.charts.distribution.title}
         </h2>
         <p className="sheet-phase-subtitle">{zones.phaseTitle}</p>
         <AfaStripeDivider />
@@ -81,8 +78,8 @@ export const ZonesDiagramChart: React.FC<ZonesDiagramChartProps> = ({
       {zones.isModifiedByResolution && (
         <div className="sheet-stamp-banner">
           <OfficialStamp
-            text="FORMATO MODIFICADO"
-            subtext="ZONAS RECONFIGURADAS EN VIVO"
+            text={COPY.charts.distribution.stampModified}
+            subtext={COPY.charts.distribution.stampModifiedSub}
             variant="celeste"
             rotate={-4}
           />
@@ -102,7 +99,7 @@ export const ZonesDiagramChart: React.FC<ZonesDiagramChartProps> = ({
         <p className="inflation-text">{inflationJustification}</p>
       </div>
 
-      {/* Zona Campeones del Mundo VIP Box */}
+      {/* Mesa Especial Campeones del Mundo VIP Box */}
       <motion.div layout className="campeones-vip-card">
         <div className="vip-star-header">
           <PlannerIcon name="estrella" size={24} />
@@ -122,7 +119,7 @@ export const ZonesDiagramChart: React.FC<ZonesDiagramChartProps> = ({
         <p className="vip-privilege-copy">{zones.campeonesDelMundo.privilegeText}</p>
       </motion.div>
 
-      {/* Two Columns: Zona A & Zona B */}
+      {/* Two Columns: Grupo A & Grupo B */}
       <div className="two-zones-grid">
         {[zones.zoneA, zones.zoneB].map((z) => (
           <motion.div
@@ -130,7 +127,7 @@ export const ZonesDiagramChart: React.FC<ZonesDiagramChartProps> = ({
             key={z.code}
             className={`zone-column-card zone-${z.code.toLowerCase()}`}
           >
-            <div className="zone-badge-top">GRUPO REGLAMENTARIO {z.code}</div>
+            <div className="zone-badge-top">{COPY.charts.distribution.groupTopBadge(z.code)}</div>
             <h3 className="zone-title-condensed">{z.name}</h3>
             <p className="zone-sub-italic">{z.subtitle}</p>
 
@@ -150,7 +147,7 @@ export const ZonesDiagramChart: React.FC<ZonesDiagramChartProps> = ({
         ))}
       </div>
 
-      {/* Combi Oficial (Where everything important happens) */}
+      {/* Combi Oficial */}
       <motion.div layout className="combi-sector-card">
         <div className="combi-header-row">
           <PlannerIcon name="combi" size={30} />
@@ -170,12 +167,12 @@ export const ZonesDiagramChart: React.FC<ZonesDiagramChartProps> = ({
       <div className="amigos-vip-strip">
         <div className="amigos-strip-top">
           <span>{zones.amigosDelOrganizador.title}</span>
-          <span className="amigos-pill">{zones.amigosDelOrganizador.guestsCount} CUPOS</span>
+          <span className="amigos-pill">{zones.amigosDelOrganizador.guestsCount} LUGARES</span>
         </div>
         <p>{zones.amigosDelOrganizador.privilegeText}</p>
       </div>
 
-      {/* Fecha de Clásicos & Interzonal */}
+      {/* Rondas Histórica & Por Sorteo */}
       <div className="special-fechas-stack">
         <div className="special-fecha-box">
           <span className="fecha-tag">{zones.fechaClasicos.label}</span>

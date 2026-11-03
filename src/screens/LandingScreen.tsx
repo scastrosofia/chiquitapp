@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { soundEngine } from '../audio/soundEngine';
+import { COPY } from '../content/copy';
 import type { OrganizacionMode } from '../engine/types';
 import { AfaStripeDivider, GoldStarsRow, PlannerIcon } from '../components/Icons';
 
@@ -29,22 +30,18 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ onSelectMode }) =>
           <GoldStarsRow count={3} size={18} />
         </div>
 
-        <span className="hero-kicker">
-          SISTEMA INTEGRAL DE PLANIFICACIÓN HOMOLOGADA
-        </span>
+        <span className="hero-kicker">{COPY.landing.kicker}</span>
 
         <h1 className="hero-wordmark">
-          ChiquiTap
+          {COPY.landing.title}
           <span className="hero-wordmark-star" aria-hidden="true">
-            ★
+            {COPY.common.brandWordmarkStar}
           </span>
         </h1>
 
         <AfaStripeDivider className="hero-stripe" />
 
-        <p className="hero-subtitle">
-          Organizamos tu evento como se organiza el fútbol argentino.
-        </p>
+        <p className="hero-subtitle">{COPY.landing.subtitle}</p>
 
         <div className="hero-ornament-icons" aria-hidden="true">
           <PlannerIcon name="anillos" size={22} />
@@ -60,8 +57,8 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ onSelectMode }) =>
             className="landing-mode-btn is-primary"
             onClick={() => handleChoose('simple')}
           >
-            <span className="mode-btn-title">Organización Simple</span>
-            <span className="mode-btn-sub">rápida</span>
+            <span className="mode-btn-title">{COPY.landing.btnSimpleTitle}</span>
+            <span className="mode-btn-sub">{COPY.landing.btnSimpleSub}</span>
           </button>
 
           <button
@@ -69,13 +66,13 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ onSelectMode }) =>
             className="landing-mode-btn is-secondary"
             onClick={() => handleChoose('personalizada')}
           >
-            <span className="mode-btn-title">Organización Personalizada</span>
-            <span className="mode-btn-sub">consulta vinculante fecha a fecha</span>
+            <span className="mode-btn-title">{COPY.landing.btnCustomTitle}</span>
+            <span className="mode-btn-sub">{COPY.landing.btnCustomSub}</span>
           </button>
         </div>
 
         <div className="hero-seal-caption">
-          <span>RESOLUCIÓN VIGENTE N° 2026/CE — SEDE ÚNICA HABILITADA</span>
+          <span>{COPY.landing.sealCaption}</span>
         </div>
       </div>
     </motion.main>

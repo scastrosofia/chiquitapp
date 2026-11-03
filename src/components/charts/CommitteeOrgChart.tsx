@@ -1,4 +1,5 @@
 import React from 'react';
+import { COPY } from '../../content/copy';
 import type { CommitteeMemberNode } from '../../engine/types';
 import { AfaStripeDivider, GoldStarsRow, PlannerIcon } from '../Icons';
 import { OfficialStamp } from '../Stamp';
@@ -18,9 +19,9 @@ export const CommitteeOrgChart: React.FC<CommitteeOrgChartProps> = ({
     <section className="planner-sheet" aria-labelledby="sec-org-title">
       <div className="sheet-header">
         <GoldStarsRow count={3} size={13} />
-        <span className="sheet-kicker">ANEXO VIII — AUTORIDADES DE APLICACIÓN</span>
+        <span className="sheet-kicker">{COPY.charts.committee.kicker}</span>
         <h2 id="sec-org-title" className="sheet-script-title">
-          Comité Ejecutivo
+          {COPY.charts.committee.title}
         </h2>
         <AfaStripeDivider />
       </div>
@@ -84,8 +85,8 @@ export const CommitteeOrgChart: React.FC<CommitteeOrgChartProps> = ({
 
       <div className="sheet-stamp-footer-center">
         <OfficialStamp
-          text="APROBADO POR UNANIMIDAD"
-          subtext="SIN ABSTENCIONES NI DISIDENCIAS"
+          text={COPY.charts.committee.stampUnanimous}
+          subtext={COPY.charts.committee.stampUnanimousSub}
           variant="gold"
           rotate={-2}
         />

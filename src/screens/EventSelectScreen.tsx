@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { soundEngine } from '../audio/soundEngine';
+import { COPY } from '../content/copy';
 import { EVENT_CONTENT } from '../content/events';
 import type { EventType, OrganizacionMode } from '../engine/types';
 import { AfaStripeDivider, GoldStarsRow, PlannerIcon } from '../components/Icons';
@@ -35,17 +36,17 @@ export const EventSelectScreen: React.FC<EventSelectScreenProps> = ({
     >
       <div className="section-top-nav">
         <button type="button" className="text-back-btn" onClick={onBack}>
-          ← Volver a modalidad
+          {COPY.eventSelect.backBtn}
         </button>
         <span className="mode-tag-pill">
-          {mode === 'simple' ? 'MODALIDAD SIMPLE' : 'MODALIDAD PERSONALIZADA'}
+          {mode === 'simple' ? COPY.eventSelect.modeSimpleTag : COPY.eventSelect.modeCustomTag}
         </span>
       </div>
 
       <div className="select-header-block">
         <GoldStarsRow count={3} size={14} />
-        <span className="sheet-kicker">APERTURA DE EXPEDIENTE</span>
-        <h1 className="select-script-heading">¿Qué evento querés organizar?</h1>
+        <span className="sheet-kicker">{COPY.eventSelect.kicker}</span>
+        <h1 className="select-script-heading">{COPY.eventSelect.heading}</h1>
         <AfaStripeDivider />
       </div>
 
@@ -66,7 +67,9 @@ export const EventSelectScreen: React.FC<EventSelectScreenProps> = ({
                 <PlannerIcon name={item.cardIcon} size={38} />
               </div>
               <div className="event-card-body">
-                <span className="event-card-cat">CATEGORÍA OFICIAL 0{idx + 1}</span>
+                <span className="event-card-cat">
+                  {COPY.eventSelect.cards[type].categoryTag}
+                </span>
                 <h2 className="event-card-title">{item.cardTitle}</h2>
                 <p className="event-card-desc">{item.cardSubtitle}</p>
               </div>

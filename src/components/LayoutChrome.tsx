@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { soundEngine } from '../audio/soundEngine';
+import { COPY } from '../content/copy';
 import { GoldStarsRow } from './Icons';
 
 interface TopBarProps {
@@ -34,13 +35,13 @@ export const InstitutionalTopBar: React.FC<TopBarProps> = ({
             onClick={onGoHome}
             aria-label="Volver al inicio de ChiquiTap"
           >
-            <span className="topbar-script">ChiquiTap</span>
+            <span className="topbar-script">{COPY.common.brandName}</span>
             <GoldStarsRow count={1} size={11} />
           </button>
         ) : (
           <div className="topbar-bulletin">
             <span className="bulletin-dot" />
-            <span>DESPACHO OFICIAL DE EVENTOS</span>
+            <span>{COPY.common.topbarBulletin}</span>
           </div>
         )}
 
@@ -84,9 +85,6 @@ export const InstitutionalTopBar: React.FC<TopBarProps> = ({
 
 export const FixedParodyFooter: React.FC = () => (
   <footer className="fixed-parody-footer" role="contentinfo">
-    <p>
-      ChiquiTap es una parodia. No está afiliada a ninguna asociación, club ni federación.
-      Ningún secanucas fue dañado.
-    </p>
+    <p>{COPY.common.footerDisclaimer}</p>
   </footer>
 );

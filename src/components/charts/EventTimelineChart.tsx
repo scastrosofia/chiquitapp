@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { COPY } from '../../content/copy';
 import type { TimelineMilestone } from '../../engine/types';
 import { AfaStripeDivider, GoldStarsRow, PlannerIcon } from '../Icons';
 import { OfficialStamp } from '../Stamp';
@@ -22,7 +23,6 @@ export const EventTimelineChart: React.FC<EventTimelineChartProps> = ({
   eventDateCaption,
   isModified,
 }) => {
-  // Chunk into rows of 3 so every row renders a clean horizontal line on 375-430px mobile
   const rows: TimelineMilestone[][] = [];
   for (let i = 0; i < milestones.length; i += 3) {
     rows.push(milestones.slice(i, i + 3));
@@ -32,9 +32,9 @@ export const EventTimelineChart: React.FC<EventTimelineChartProps> = ({
     <section className="planner-sheet" aria-labelledby="sec-timeline-title">
       <div className="sheet-header">
         <GoldStarsRow count={3} size={13} />
-        <span className="sheet-kicker">ANEXO I — CRONOGRAMA HOMOLOGADO</span>
+        <span className="sheet-kicker">{COPY.charts.timeline.kicker}</span>
         <h2 id="sec-timeline-title" className="sheet-script-title">
-          Cronograma del Evento
+          {COPY.charts.timeline.title}
         </h2>
         <AfaStripeDivider />
       </div>
@@ -42,8 +42,8 @@ export const EventTimelineChart: React.FC<EventTimelineChartProps> = ({
       {isModified && (
         <div className="sheet-stamp-banner">
           <OfficialStamp
-            text="FORMATO MODIFICADO"
-            subtext="HORARIOS SUJETOS A COMBI"
+            text={COPY.charts.timeline.stampModified}
+            subtext={COPY.charts.timeline.stampModifiedSub}
             variant="gold"
             rotate={-3}
           />

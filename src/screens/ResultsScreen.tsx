@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { soundEngine } from '../audio/soundEngine';
+import { COPY } from '../content/copy';
 import { generateChiquiTapPlan } from '../engine/chiquitapEngine';
 import type {
   EventType,
@@ -67,7 +68,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
     [eventType, mode, answers, seed, formatNumber, appliedMutations]
   );
 
-  // Trigger 2-3 official rule-change popups as the user scrolls through the dossier
+  // Trigger official rule-change popups as the user scrolls
   useEffect(() => {
     const triggerResolutionAtIndex = (idx: number) => {
       const candidate = plan.scheduledResolutions[idx];
@@ -148,7 +149,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
       <header className="dossier-cover-sheet">
         <div className="dossier-top-badges">
           <span className="formato-gestion-badge">
-            FORMATO N° {plan.formatNumber} DE LA GESTIÓN
+            {COPY.results.dossierBadge(plan.formatNumber)}
           </span>
           <span className="expediente-mini-code">{plan.expedienteCode}</span>
         </div>
@@ -163,17 +164,17 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         {/* Summary KPI Strip */}
         <div className="dossier-kpi-grid">
           <div className="kpi-cell">
-            <span className="kpi-label">INVITADOS</span>
+            <span className="kpi-label">{COPY.results.kpiGuestsLabel}</span>
             <strong className="kpi-val">{plan.inflatedGuests}</strong>
-            <span className="kpi-micro">(Base {plan.baseGuests} ampliada)</span>
+            <span className="kpi-micro">{COPY.results.kpiGuestsSub(plan.baseGuests)}</span>
           </div>
           <div className="kpi-cell">
-            <span className="kpi-label">ESTRUCTURA</span>
-            <strong className="kpi-val">2 ZONAS + ★</strong>
-            <span className="kpi-micro">{plan.anexosCount} Anexos vigentes</span>
+            <span className="kpi-label">{COPY.results.kpiStructureLabel}</span>
+            <strong className="kpi-val">{COPY.results.kpiStructureVal}</strong>
+            <span className="kpi-micro">{COPY.results.kpiStructureSub(plan.anexosCount)}</span>
           </div>
           <div className="kpi-cell is-full-span">
-            <span className="kpi-label">SEDE ÚNICA OBLIGATORIA</span>
+            <span className="kpi-label">{COPY.results.kpiVenueLabel}</span>
             <strong className="kpi-val is-sde">{plan.venueOfficial}</strong>
           </div>
         </div>
@@ -182,7 +183,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         <div className="dossier-combi-callout">
           <div className="combi-callout-title">
             <PlannerIcon name="combi" size={24} />
-            <span>PROTOCOLO DE COMBI OFICIAL (ART. 1° INCISO B)</span>
+            <span>{COPY.results.combiBannerHeader}</span>
           </div>
           <p>{plan.combiManifesto}</p>
         </div>
@@ -194,7 +195,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
             className="btn-primary-institutional full-width"
             onClick={handleRedrawClick}
           >
-            VOLVER A SORTEAR (NUEVO FORMATO)
+            {COPY.results.btnRedraw}
           </button>
 
           <div className="dossier-secondary-actions">
@@ -204,7 +205,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
                 className="btn-outline-planner"
                 onClick={handleManualExtraResolution}
               >
-                Emitir Resolución sobre la marcha ({remainingResolutionsCount})
+                {COPY.results.btnEmitResolution(remainingResolutionsCount)}
               </button>
             )}
             <button
@@ -212,7 +213,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
               className="btn-outline-planner"
               onClick={onStartOver}
             >
-              Cambiar Evento
+              {COPY.results.btnChangePlan}
             </button>
           </div>
         </div>
@@ -220,8 +221,8 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         {appliedMutations.length > 0 && (
           <div className="cover-modifications-summary">
             <OfficialStamp
-              text="FORMATO MODIFICADO"
-              subtext={`${appliedMutations.length} RESOLUCIÓN(ES) APLICADA(S)`}
+              text={COPY.results.stampFormatModified}
+              subtext={COPY.results.stampFormatModifiedSub(appliedMutations.length)}
               variant="gold"
               rotate={-2}
             />
@@ -229,7 +230,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         )}
       </header>
 
-      {/* 1. Event Timeline */}
+      {/* 1. Cronograma del Evento */}
       <EventTimelineChart
         milestones={plan.timeline}
         hostsScriptTitle={plan.hostsScriptTitle}
@@ -237,10 +238,10 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         isModified={appliedMutations.includes('reconfigurar_zonas')}
       />
 
-      {/* 2. Countdown / Checklist */}
+      {/* 2. Countdown & Checklist */}
       <CountdownChecklistChart blocks={plan.countdown} />
 
-      {/* 3. Diagrama de Zonas + Campeones del Mundo + Combi */}
+      {/* 3. Distribución de Invitados (ex Diagrama de Zonas) */}
       <ZonesDiagramChart
         zones={plan.zones}
         baseGuests={plan.baseGuests}
@@ -248,19 +249,19 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         inflationJustification={plan.inflationJustification}
       />
 
-      {/* 4. Fixture / Bracket -> External Tournament */}
-      <FixtureBracketChart bracket={plan.bracket} />
+      {/* 4. Camino al Ramo / Torta / Postre (ex Fixture & Playoffs) */}
+      <FixtureBracketChart bracket={plan.bracket} eventType={eventType} />
 
-      {/* 5. Tabla Anual y Promedios (con Descensos Anulados) */}
+      {/* 5. Ranking de Afecto & Asistencia */}
       <StandingsPromediosChart standings={plan.standings} />
 
-      {/* 6. Mapa de Ruta a Santiago del Estero */}
+      {/* 6. Cómo Llegar (ex Mapa de Ruta) */}
       <RouteMapChart route={plan.route} />
 
-      {/* 7. Presupuesto (Drones + Secanucas mayoría absoluta) */}
+      {/* 7. Presupuesto Oficial */}
       <BudgetChart budget={plan.budget} />
 
-      {/* 8. Organigrama del Comité Ejecutivo */}
+      {/* 8. Comité Organizador */}
       <CommitteeOrgChart committee={plan.committee} />
 
       {/* 9. Show de Drones en Canvas */}
@@ -268,16 +269,13 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
 
       {/* Bottom Re-draw Bar */}
       <div className="bottom-redraw-card">
-        <p className="bottom-redraw-note">
-          ¿El formato resultó demasiado claro? El Comité Ejecutivo puede sortear
-          una nueva variante reglamentaria de inmediato.
-        </p>
+        <p className="bottom-redraw-note">{COPY.results.bottomRedrawNote}</p>
         <button
           type="button"
           className="btn-primary-institutional full-width"
           onClick={handleRedrawClick}
         >
-          VOLVER A SORTEAR (FORMATO N° {plan.formatNumber + 1} DE LA GESTIÓN)
+          {COPY.results.bottomRedrawBtn(plan.formatNumber + 1)}
         </button>
       </div>
 

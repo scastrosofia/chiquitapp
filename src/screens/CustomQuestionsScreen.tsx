@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { soundEngine } from '../audio/soundEngine';
-import { buildQuestionSequence } from '../content/questions';
+import { COPY } from '../content/copy';
+import { buildQuestionSequence, type CustomQuestion } from '../content/questions';
 import type { UserAnswers } from '../engine/types';
 import { AfaStripeDivider, GoldStarsRow } from '../components/Icons';
 import { OfficialStamp } from '../components/Stamp';
@@ -12,10 +13,9 @@ interface CustomQuestionsScreenProps {
   onBack: () => void;
 }
 
-type Choice = 'yes' | 'no';
 type StepPhase =
   | 'idle'
-  | 'forcing_opposite'
+  | 'forcing_yes'
   | 'approved'
   | 'numeric_followup'
   | 'post_banner';
@@ -28,15 +28,14 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
   const questions = useMemo(() => buildQuestionSequence(seed), [seed]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [phase, setPhase] = useState<StepPhase>('idle');
-  const [clickedChoice, setClickedChoice] = useState<Choice | null>(null);
-  const [forcedChoice, setForcedChoice] = useState<Choice | null>(null);
   const [warningMsg, setWarningMsg] = useState<string | null>(null);
+  const [responseMsg, setResponseMsg] = useState<string | null>(null);
   const [secanucasInput, setSecanucasInput] = useState<string>('2');
   const [recordedAnswers, setRecordedAnswers] = useState<Record<string, boolean>>({});
   const prefersReduced = useReducedMotion();
   const timersRef = useRef<number[]>([]);
 
-  const currentQ = questions[currentIdx];
+  const currentQ: CustomQuestion | undefined = questions[currentIdx];
   const totalQ = questions.length;
 
   const clearTimers = () => {
@@ -64,24 +63,33 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
       });
     } else {
       setPhase('idle');
-      setClickedChoice(null);
-      setForcedChoice(null);
       setWarningMsg(null);
+      setResponseMsg(null);
       setCurrentIdx((prev) => prev + 1);
     }
   };
 
-  const finalizeOppositeApproval = (targetChoice: Choice) => {
+  const finalizeYesApproval = () => {
     if (!currentQ) return;
     soundEngine.playStamp();
     const updated = {
       ...recordedAnswers,
-      [currentQ.id]: targetChoice === 'yes',
+      [currentQ.id]: true,
     };
     setRecordedAnswers(updated);
     setPhase('approved');
 
-    if (currentQ.requiresNumericFollowup) {
+    const responseText =
+      typeof currentQ.responseAfterForcedYes === 'function'
+        ? currentQ.responseAfterForcedYes(
+            parseInt(secanucasInput, 10) || 2,
+            (parseInt(secanucasInput, 10) || 2) * 2 * 280 + 1200 + 540 + 2000
+          )
+        : currentQ.responseAfterForcedYes;
+
+    setResponseMsg(responseText);
+
+    if (currentQ.numericFollowup) {
       const t = window.setTimeout(
         () => {
           setPhase('numeric_followup');
@@ -107,32 +115,28 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
       () => {
         advanceToNextQuestion(updated);
       },
-      prefersReduced ? 450 : 980
+      prefersReduced ? 450 : 1300
     );
     timersRef.current.push(t);
   };
 
-  /**
-   * Core rule: whichever button the user clicks ('yes' or 'no'),
-   * ChiquiTap ALWAYS rejects it and auto-selects the opposite option!
-   */
-  const handleUserClickChoice = (userChoice: Choice) => {
+  const handleDirectYes = () => {
     if (phase !== 'idle' || !currentQ) return;
-    const opposite: Choice = userChoice === 'yes' ? 'no' : 'yes';
+    soundEngine.unlockFromGesture();
+    finalizeYesApproval();
+  };
 
+  const handleAttemptNo = () => {
+    if (phase !== 'idle' || !currentQ) return;
     soundEngine.unlockFromGesture();
     soundEngine.playWhistle();
 
-    setClickedChoice(userChoice);
-    setForcedChoice(opposite);
-    setWarningMsg(
-      userChoice === 'no' ? currentQ.warningWhenNo : currentQ.warningWhenYes
-    );
-    setPhase('forcing_opposite');
+    setWarningMsg(currentQ.noWarning);
+    setPhase('forcing_yes');
 
     const t = window.setTimeout(
       () => {
-        finalizeOppositeApproval(opposite);
+        finalizeYesApproval();
       },
       prefersReduced ? 350 : 1080
     );
@@ -144,6 +148,8 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
     soundEngine.unlockFromGesture();
     soundEngine.playStamp();
     const parsed = Math.max(0, parseInt(secanucasInput, 10) || 2);
+    const inflated = parsed * 2 * 280 + 1200 + 540 + 2000;
+    setResponseMsg(`Pediste ${parsed}. Te asignamos ${inflated.toLocaleString('es-AR')}.`);
     advanceToNextQuestion(recordedAnswers, parsed);
   };
 
@@ -158,33 +164,21 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
   const progressPct = Math.round(((currentIdx + 1) / totalQ) * 100);
   const mechanic = currentQ.mechanic;
 
-  // Animation for whichever button was clicked vs whichever opposite button is being forced
-  const getButtonAnimate = (btnSide: Choice) => {
-    if (phase === 'idle' || !clickedChoice || !forcedChoice) {
+  // Animation for the "No" button dodging / shaking / shrinking when clicked
+  const getNoButtonAnimate = () => {
+    if (phase === 'idle') {
       return { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1 };
     }
-
-    // If this button is the OPPOSITE target being clicked by the Committee cursor
-    if (btnSide === forcedChoice) {
-      if (phase === 'forcing_opposite' && !prefersReduced) {
-        return { scale: [1, 1.07, 0.94, 1.04], opacity: 1, x: 0, y: 0, rotate: 0 };
-      }
-      return { scale: 1.03, opacity: 1, x: 0, y: 0, rotate: 0 };
-    }
-
-    // Otherwise, this button is the one the user tried to click -> dodge / shrink / shake / morph!
     if (prefersReduced) {
-      return { opacity: 0.45 };
+      return { opacity: 0.4 };
     }
-
-    const dir = btnSide === 'yes' ? -1 : 1; // Dodge left if 'yes' (left col), dodge right if 'no' (right col)
     switch (mechanic) {
       case 'dodge_and_cursor':
-        return { x: dir * 42, y: 14, rotate: dir * 9, scale: 0.9 };
+        return { x: 44, y: 14, rotate: 9, scale: 0.88 };
       case 'shrink_clicked':
-        return { scale: 0.34, opacity: 0.38, y: 8 };
+        return { scale: 0.32, opacity: 0.38, y: 8 };
       case 'morph_opposite':
-        return { rotate: [0, -6, 6, 0], scale: 0.96, opacity: 0.72 };
+        return { rotate: [0, -6, 6, 0], scale: 1.02 };
       case 'paredes_shock':
       case 'tribunal_disciplina':
       default:
@@ -192,36 +186,25 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
     }
   };
 
-  const yesLabel =
-    phase !== 'idle' && clickedChoice === 'yes' && mechanic === 'morph_opposite'
-      ? 'No (De Oficio)'
-      : 'Sí';
-
   const noLabel =
-    phase !== 'idle' && clickedChoice === 'no' && mechanic === 'morph_opposite'
-      ? 'Sí (De Oficio)'
-      : 'No';
-
-  // Cursor trajectory: starts over the user's clicked button, glides to the opposite button and clicks it
-  const startLeft = clickedChoice === 'yes' ? '25%' : '74%';
-  const targetLeft = forcedChoice === 'yes' ? '25%' : '74%';
+    phase !== 'idle' && mechanic === 'morph_opposite' ? 'Sí (De Oficio)' : COPY.questions.noBtn;
 
   return (
     <main className="screen-container questions-screen">
       <div className="section-top-nav">
         <button type="button" className="text-back-btn" onClick={onBack}>
-          ← Cambiar evento
+          {COPY.questions.backBtn}
         </button>
-        <span className="mode-tag-pill">PLENARIO VINCULANTE</span>
+        <span className="mode-tag-pill">{COPY.questions.modeTag}</span>
       </div>
 
-      {/* Fixture-style Progress Header */}
+      {/* Progress Header */}
       <div className="fixture-progress-header">
         <div className="fixture-progress-labels">
           <span className="fixture-fecha-count">
-            FECHA {currentIdx + 1} DE {totalQ}
+            {COPY.questions.progressLabel(currentIdx + 1, totalQ)}
           </span>
-          <span className="fixture-zone-status">RONDA REGULAR</span>
+          <span className="fixture-zone-status">{COPY.questions.statusLabel}</span>
         </div>
         <div className="fixture-progress-track">
           <motion.div
@@ -243,7 +226,7 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
         >
           <div className="question-card-top">
             <GoldStarsRow count={3} size={13} />
-            <span className="sheet-kicker">CONSULTA AL ORGANIZADOR</span>
+            <span className="sheet-kicker">{COPY.questions.cardKicker}</span>
             <AfaStripeDivider />
           </div>
 
@@ -253,7 +236,7 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
             <p className="question-subtitle-note">{currentQ.subtitle}</p>
           )}
 
-          {/* Warning / Tribunal / Paredes Alert */}
+          {/* Warning banner when No is clicked */}
           {warningMsg && (
             <motion.div
               className={`no-warning-callout ${
@@ -262,18 +245,29 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
               initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <strong>ATENCIÓN REGLAMENTARIA:</strong> {warningMsg}
+              <strong>DECISIÓN DEL COMITÉ:</strong> {warningMsg}
+            </motion.div>
+          )}
+
+          {/* Response text after approval */}
+          {responseMsg && (
+            <motion.div
+              className="no-warning-callout is-paredes-alert"
+              initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <strong>RESOLUCIÓN:</strong> {responseMsg}
             </motion.div>
           )}
 
           {/* Numeric Follow-up for Secanucas */}
-          {phase === 'numeric_followup' && currentQ.requiresNumericFollowup ? (
+          {phase === 'numeric_followup' && currentQ.numericFollowup ? (
             <form
               className="secanucas-followup-form"
               onSubmit={handleConfirmSecanucas}
             >
               <label htmlFor="secanucas-num-input" className="followup-label">
-                {currentQ.requiresNumericFollowup.prompt}
+                {currentQ.numericFollowup.prompt}
               </label>
               <input
                 id="secanucas-num-input"
@@ -285,22 +279,18 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
                 className="planner-number-input"
                 autoFocus
               />
-              <p className="followup-hint">
-                El Comité aplicará automáticamente el coeficiente ×2 por zona,
-                reserva interzonal, dotación de Combi Oficial y cupo de
-                autoridades.
-              </p>
+              <p className="followup-hint">{COPY.questions.secanucasForm.hint}</p>
               <button
                 type="submit"
                 className="btn-primary-institutional full-width"
               >
-                HOMOLOGAR Y CONTINUAR
+                {COPY.questions.secanucasForm.submitBtn}
               </button>
             </form>
           ) : phase === 'post_banner' && currentQ.postApprovalBanner ? (
             <div className="sde-confirmed-banner">
               <div className="sde-banner-kicker">
-                RESOLUCIÓN DE LOCALÍA INMEDIATA
+                {COPY.questions.sdeBannerKicker}
               </div>
               <p className="sde-banner-copy">{currentQ.postApprovalBanner}</p>
               <button
@@ -308,7 +298,7 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
                 className="btn-primary-institutional full-width"
                 onClick={handleConfirmBanner}
               >
-                ENTENDIDO, AVANZAR FECHA
+                {COPY.questions.sdeBannerBtn}
               </button>
             </div>
           ) : (
@@ -316,61 +306,51 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
               <motion.button
                 type="button"
                 className={`answer-choice-btn is-yes ${
-                  forcedChoice === 'yes' &&
-                  (phase === 'forcing_opposite' || phase === 'approved')
+                  phase === 'forcing_yes' || phase === 'approved'
                     ? 'is-auto-pressed'
                     : ''
-                } ${
-                  phase !== 'idle' &&
-                  clickedChoice === 'yes' &&
-                  mechanic === 'morph_opposite'
-                    ? 'is-morphed'
-                    : ''
                 }`}
-                animate={getButtonAnimate('yes')}
-                transition={{ duration: 0.42 }}
-                onClick={() => handleUserClickChoice('yes')}
+                animate={
+                  phase === 'forcing_yes' && !prefersReduced
+                    ? { scale: [1, 1.07, 0.94, 1.04] }
+                    : { scale: 1 }
+                }
+                transition={{ duration: 0.65 }}
+                onClick={handleDirectYes}
                 disabled={phase !== 'idle'}
               >
-                {yesLabel}
+                {COPY.questions.yesBtn}
               </motion.button>
 
               <motion.button
                 type="button"
                 className={`answer-choice-btn is-no ${
-                  forcedChoice === 'no' &&
-                  (phase === 'forcing_opposite' || phase === 'approved')
-                    ? 'is-auto-pressed'
-                    : ''
-                } ${
-                  phase !== 'idle' &&
-                  clickedChoice === 'no' &&
-                  mechanic === 'morph_opposite'
+                  phase !== 'idle' && mechanic === 'morph_opposite'
                     ? 'is-morphed'
                     : ''
                 }`}
-                animate={getButtonAnimate('no')}
-                transition={{ duration: 0.42 }}
-                onClick={() => handleUserClickChoice('no')}
+                animate={getNoButtonAnimate()}
+                transition={{ duration: 0.38 }}
+                onClick={handleAttemptNo}
                 disabled={phase !== 'idle'}
               >
                 {noLabel}
               </motion.button>
 
-              {/* Animated Committee Cursor gliding from clicked button to the opposite button and clicking it */}
-              {phase === 'forcing_opposite' && forcedChoice && (
+              {/* Animated Committee Cursor gliding from No to Sí */}
+              {phase === 'forcing_yes' && (
                 <motion.div
                   className="committee-auto-cursor"
                   initial={
                     prefersReduced
-                      ? { left: targetLeft, top: '52%', opacity: 1 }
-                      : { left: startLeft, top: '68%', opacity: 0, scale: 1.1 }
+                      ? { left: '25%', top: '52%', opacity: 1 }
+                      : { left: '74%', top: '68%', opacity: 0, scale: 1.1 }
                   }
                   animate={
                     prefersReduced
-                      ? { left: targetLeft, top: '52%', opacity: 1 }
+                      ? { left: '25%', top: '52%', opacity: 1 }
                       : {
-                          left: [startLeft, targetLeft, targetLeft],
+                          left: ['74%', '25%', '25%'],
                           top: ['68%', '48%', '52%'],
                           opacity: [1, 1, 1],
                           scale: [1.08, 1, 0.84],
@@ -387,7 +367,7 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
                       strokeWidth="1.5"
                     />
                   </svg>
-                  <span className="cursor-tag">COMITÉ EJECUTIVO</span>
+                  <span className="cursor-tag">{COPY.questions.cursorTag}</span>
                 </motion.div>
               )}
             </div>
@@ -399,12 +379,8 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
             phase === 'post_banner') && (
             <div className="question-approved-stamp-row">
               <OfficialStamp
-                text="APROBADO POR UNANIMIDAD"
-                subtext={
-                  forcedChoice === 'no'
-                    ? 'SE COMPUTÓ: NO (POR EL COMITÉ)'
-                    : 'SE COMPUTÓ: SÍ (POR EL COMITÉ)'
-                }
+                text={COPY.questions.approvedStampText}
+                subtext={COPY.questions.approvedStampSubtext}
                 variant="celeste"
                 rotate={-4}
               />
