@@ -20,6 +20,8 @@ type StepPhase =
   | 'numeric_followup'
   | 'post_banner';
 
+const AUTO_ADVANCE_MS = 4200;
+
 export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
   seed,
   onComplete,
@@ -77,7 +79,6 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
       [currentQ.id]: true,
     };
     setRecordedAnswers(updated);
-    setPhase('approved');
 
     const responseText =
       typeof currentQ.responseAfterForcedYes === 'function'
@@ -89,33 +90,27 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
 
     setResponseMsg(responseText);
 
+    // If there is a numeric followup (secanucas), transition to it after a brief moment
     if (currentQ.numericFollowup) {
-      const t = window.setTimeout(
-        () => {
-          setPhase('numeric_followup');
-        },
-        prefersReduced ? 250 : 750
-      );
-      timersRef.current.push(t);
+      setPhase('numeric_followup');
       return;
     }
 
+    // If there is an SDE post-approval banner, show both response and banner with manual confirmation
     if (currentQ.postApprovalBanner) {
-      const t = window.setTimeout(
-        () => {
-          setPhase('post_banner');
-        },
-        prefersReduced ? 250 : 650
-      );
-      timersRef.current.push(t);
+      setPhase('post_banner');
       return;
     }
 
+    setPhase('approved');
+
+    // Generous timer (4.2 seconds) to comfortably read the punchline,
+    // plus a "Continuar →" button so the user can advance sooner if they wish
     const t = window.setTimeout(
       () => {
         advanceToNextQuestion(updated);
       },
-      prefersReduced ? 450 : 1300
+      prefersReduced ? 1600 : AUTO_ADVANCE_MS
     );
     timersRef.current.push(t);
   };
@@ -134,11 +129,12 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
     setWarningMsg(currentQ.noWarning);
     setPhase('forcing_yes');
 
+    // Give time to see the Committee cursor travel to 'Sí' and register the warning
     const t = window.setTimeout(
       () => {
         finalizeYesApproval();
       },
-      prefersReduced ? 350 : 1080
+      prefersReduced ? 500 : 1200
     );
     timersRef.current.push(t);
   };
@@ -149,8 +145,24 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
     soundEngine.playStamp();
     const parsed = Math.max(0, parseInt(secanucasInput, 10) || 2);
     const inflated = parsed * 2 * 280 + 1200 + 540 + 2000;
+
+    // Display the punchline! Don't skip it!
     setResponseMsg(`Pediste ${parsed}. Te asignamos ${inflated.toLocaleString('es-AR')}.`);
-    advanceToNextQuestion(recordedAnswers, parsed);
+    setPhase('approved');
+
+    const updated = {
+      ...recordedAnswers,
+      [currentQ.id]: true,
+    };
+    setRecordedAnswers(updated);
+
+    const t = window.setTimeout(
+      () => {
+        advanceToNextQuestion(updated, parsed);
+      },
+      prefersReduced ? 1600 : AUTO_ADVANCE_MS
+    );
+    timersRef.current.push(t);
   };
 
   const handleConfirmBanner = () => {
@@ -164,7 +176,6 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
   const progressPct = Math.round(((currentIdx + 1) / totalQ) * 100);
   const mechanic = currentQ.mechanic;
 
-  // Animation for the "No" button dodging / shaking / shrinking when clicked
   const getNoButtonAnimate = () => {
     if (phase === 'idle') {
       return { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1 };
@@ -249,12 +260,18 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
             </motion.div>
           )}
 
-          {/* Response text after approval */}
+          {/* Response / Punchline text */}
           {responseMsg && (
             <motion.div
               className="no-warning-callout is-paredes-alert"
               initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
+              style={{
+                fontSize: '0.92rem',
+                lineHeight: 1.45,
+                padding: '12px 14px',
+                borderLeft: '4px solid var(--gold-star, #C9A227)',
+              }}
             >
               <strong>RESOLUCIÓN:</strong> {responseMsg}
             </motion.div>
@@ -301,14 +318,22 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
                 {COPY.questions.sdeBannerBtn}
               </button>
             </div>
+          ) : phase === 'approved' ? (
+            <div className="question-approved-action-block" style={{ marginTop: '16px' }}>
+              <button
+                type="button"
+                className="btn-primary-institutional full-width"
+                onClick={() => advanceToNextQuestion(recordedAnswers)}
+              >
+                Continuar →
+              </button>
+            </div>
           ) : (
             <div className="yes-no-arena">
               <motion.button
                 type="button"
                 className={`answer-choice-btn is-yes ${
-                  phase === 'forcing_yes' || phase === 'approved'
-                    ? 'is-auto-pressed'
-                    : ''
+                  phase === 'forcing_yes' ? 'is-auto-pressed' : ''
                 }`}
                 animate={
                   phase === 'forcing_yes' && !prefersReduced
@@ -356,7 +381,7 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
                           scale: [1.08, 1, 0.84],
                         }
                   }
-                  transition={{ duration: 0.82, ease: 'easeInOut' }}
+                  transition={{ duration: 0.95, ease: 'easeInOut' }}
                   aria-hidden="true"
                 >
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
@@ -374,9 +399,7 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
           )}
 
           {/* Stamp overlay when Approved */}
-          {(phase === 'approved' ||
-            phase === 'numeric_followup' ||
-            phase === 'post_banner') && (
+          {(phase === 'approved' || phase === 'post_banner') && (
             <div className="question-approved-stamp-row">
               <OfficialStamp
                 text={COPY.questions.approvedStampText}

@@ -17,12 +17,12 @@ export const LoadingCommitteeScreen: React.FC<LoadingCommitteeScreenProps> = ({
   const prefersReduced = useReducedMotion();
 
   useEffect(() => {
-    const delays = [520, 620, 680, 820, 650, 480];
+    const delays = [1600, 2100, 2100, 2400, 2200, 1500];
     if (stepIdx >= STATUS_STEPS.length - 1) {
       soundEngine.playStamp();
       const doneTimer = window.setTimeout(() => {
         onComplete();
-      }, 420);
+      }, 1200);
       return () => window.clearTimeout(doneTimer);
     }
 
