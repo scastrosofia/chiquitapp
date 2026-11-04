@@ -144,7 +144,7 @@ function sampleShapePoints(
     }
   }
 
-  // Text formations: 'sde' or 'anfitriones'
+  // Text formations: 'sancor', 'sde' or 'anfitriones'
   const textToRender = formation.textValue || (formation.id === 'sde' ? 'SDE' : 'VIP');
   const off = document.createElement('canvas');
   off.width = 280;
@@ -154,14 +154,22 @@ function sampleShapePoints(
     octx.fillStyle = '#FFFFFF';
     octx.textAlign = 'center';
     octx.textBaseline = 'middle';
-    const fontSize = textToRender.length > 5 ? 42 : textToRender.length > 3 ? 52 : 66;
-    octx.font = `700 ${fontSize}px Oswald, Montserrat, sans-serif`;
-    octx.fillText(textToRender, 140, 74);
+    if (formation.id === 'sancor' || textToRender.includes(' ')) {
+      const words = textToRender.split(' ');
+      octx.font = '800 36px Oswald, Montserrat, sans-serif';
+      octx.fillText(words[0], 140, 50);
+      octx.font = '800 32px Oswald, Montserrat, sans-serif';
+      octx.fillText(words.slice(1).join(' '), 140, 96);
+    } else {
+      const fontSize = textToRender.length > 5 ? 42 : textToRender.length > 3 ? 52 : 66;
+      octx.font = `700 ${fontSize}px Oswald, Montserrat, sans-serif`;
+      octx.fillText(textToRender, 140, 74);
+    }
     return extractPixelsToDrones(
       off,
       width,
       height,
-      formation.id === 'sde' ? '#75AADB' : '#FFFFFF',
+      formation.id === 'sancor' ? '#75AADB' : formation.id === 'sde' ? '#75AADB' : '#FFFFFF',
       '#FFD55A'
     );
   }

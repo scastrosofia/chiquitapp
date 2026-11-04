@@ -14,13 +14,10 @@ import { AfaStripeDivider, GoldStarsRow, PlannerIcon } from '../components/Icons
 import { RuleChangeModal } from '../components/RuleChangeModal';
 import { OfficialStamp } from '../components/Stamp';
 import { BudgetChart } from '../components/charts/BudgetChart';
-import { CommitteeOrgChart } from '../components/charts/CommitteeOrgChart';
-import { CountdownChecklistChart } from '../components/charts/CountdownChecklistChart';
 import { DroneShowCanvas } from '../components/charts/DroneShowCanvas';
 import { EventTimelineChart } from '../components/charts/EventTimelineChart';
 import { FixtureBracketChart } from '../components/charts/FixtureBracketChart';
 import { RouteMapChart } from '../components/charts/RouteMapChart';
-import { StandingsPromediosChart } from '../components/charts/StandingsPromediosChart';
 import { ZonesDiagramChart } from '../components/charts/ZonesDiagramChart';
 
 interface ResultsScreenProps {
@@ -178,6 +175,18 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         <h1 className="dossier-script-main">{plan.eventDisplayName}</h1>
         <p className="dossier-hosts-sub">{plan.hostsScriptTitle}</p>
 
+        {/* Sede Madre de Ciudades Announcement */}
+        <div className="dossier-venue-banner">
+          <span className="venue-banner-badge">SEDE HOMOLOGADA</span>
+          <p className="venue-banner-text">
+            {eventType === 'casamiento'
+              ? 'Tu casamiento se desarrollará en el Estadio Único Madre de Ciudades — Santiago del Estero.'
+              : eventType === 'cumpleanos'
+              ? 'Tu cumpleaños sorpresa se desarrollará en el Estadio Único Madre de Ciudades — Santiago del Estero.'
+              : 'Tu cena se desarrollará en el Estadio Único Madre de Ciudades — Santiago del Estero.'}
+          </p>
+        </div>
+
         <AfaStripeDivider />
 
         {/* Summary KPI Strip */}
@@ -257,10 +266,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         isModified={appliedMutations.includes('reconfigurar_zonas')}
       />
 
-      {/* 2. Countdown & Checklist */}
-      <CountdownChecklistChart blocks={plan.countdown} />
-
-      {/* 3. Distribución de Invitados (ex Diagrama de Zonas) */}
+      {/* 2. Distribución de Invitados (ex Diagrama de Zonas) */}
       <ZonesDiagramChart
         zones={plan.zones}
         baseGuests={plan.baseGuests}
@@ -268,22 +274,16 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         inflationJustification={plan.inflationJustification}
       />
 
-      {/* 4. Camino al Ramo / Torta / Postre (ex Fixture & Playoffs) */}
+      {/* 3. Camino al Ramo / Torta / Postre (ex Fixture & Playoffs) */}
       <FixtureBracketChart bracket={plan.bracket} eventType={eventType} />
 
-      {/* 5. Ranking de Afecto & Asistencia */}
-      <StandingsPromediosChart standings={plan.standings} />
-
-      {/* 6. Cómo Llegar (ex Mapa de Ruta) */}
+      {/* 4. Cómo Llegar (ex Mapa de Ruta) */}
       <RouteMapChart route={plan.route} />
 
-      {/* 7. Presupuesto Oficial */}
+      {/* 5. Presupuesto Oficial */}
       <BudgetChart budget={plan.budget} />
 
-      {/* 8. Comité Organizador */}
-      <CommitteeOrgChart committee={plan.committee} />
-
-      {/* 9. Show de Drones en Canvas */}
+      {/* 6. Show de Drones en Canvas */}
       <DroneShowCanvas formations={plan.droneFormations} />
 
       {/* Bottom Re-draw Bar */}

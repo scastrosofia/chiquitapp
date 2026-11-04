@@ -885,6 +885,36 @@ input {
   color: var(--ink-soft);
 }
 
+.dossier-venue-banner {
+  background: var(--celeste-soft);
+  border: 1.5px solid var(--celeste-deep);
+  padding: 8px 12px;
+  margin: 10px auto 14px;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.venue-banner-badge {
+  font-family: var(--font-condensed);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--celeste-deep);
+  text-transform: uppercase;
+}
+
+.venue-banner-text {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink-black);
+  margin: 0;
+  line-height: 1.3;
+}
+
 .dossier-kpi-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

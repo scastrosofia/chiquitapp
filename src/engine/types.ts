@@ -187,7 +187,7 @@ export interface CommitteeMemberNode {
 }
 
 export interface DroneFormation {
-  id: 'copa' | 'estrella' | 'anfitriones' | 'sde' | 'corazon';
+  id: 'sancor' | 'copa' | 'estrella' | 'anfitriones' | 'sde' | 'corazon';
   label: string;
   textValue?: string;
   caption: string;

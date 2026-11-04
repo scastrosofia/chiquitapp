@@ -24,8 +24,8 @@ export const COPY = {
     topbarBulletin: 'DESPACHO DEL COMITÉ ORGANIZADOR',
     footerDisclaimer:
       'ChiquiTapp es una parodia. No está afiliada a ninguna asociación, club ni federación. Ningún secanucas fue dañado.',
-    officialVenue: 'Santiago del Estero (Salón Elegido por el Tesorero)',
-    officialVenueDetail: 'Salón Principal Madre de Ciudades — Santiago del Estero',
+    officialVenue: 'Santiago del Estero (Estadio Único Madre de Ciudades)',
+    officialVenueDetail: 'Estadio Único Madre de Ciudades — Santiago del Estero',
     combiTitle: 'Combi Oficial (donde pasa todo lo verdaderamente importante)',
     combiManifesto:
       'Por disposición protocolar del Comité Organizador, todo lo verdaderamente importante del evento ocurre adentro de una Combi Oficial blanca con vidrios polarizados estacionada en el acceso auxiliar: la degustación del plato principal, la firma de actas, la entrega de premios inventados y el recuento de secanucas.',
@@ -417,14 +417,9 @@ export const COPY = {
     },
 
     // 2. Countdown & Checklist
-    countdown: {
-      kicker: 'ANEXO II — CUENTA REGRESIVA & CONTROL',
-      title: 'Countdown & Checklist',
-    },
-
-    // 3. Distribución de Invitados (ex Diagrama de Zonas)
+    // 2. Distribución de Invitados (ex Diagrama de Zonas)
     distribution: {
-      kicker: 'ANEXO III — DISTRIBUCIÓN DE INVITADOS',
+      kicker: 'ANEXO II — DISTRIBUCIÓN DE INVITADOS',
       title: 'Distribución de Invitados',
       stampModified: 'DISTRIBUCIÓN MODIFICADA',
       stampModifiedSub: 'MESAS RECONFIGURADAS EN VIVO',
@@ -443,9 +438,9 @@ export const COPY = {
       },
     },
 
-    // 4. Camino al Ramo / Torta / Postre (ex Fixture & Playoffs)
+    // 3. Camino al Ramo / Torta / Postre (ex Fixture & Playoffs)
     pathBracket: {
-      kicker: 'ANEXO IV — CAMINO A LOS PREMIOS DE LA NOCHE',
+      kicker: 'ANEXO III — CAMINO A LOS PREMIOS DE LA NOCHE',
       titleByEvent: {
         casamiento: 'Camino al Ramo',
         cumpleanos: 'Camino a la Torta',
@@ -464,31 +459,15 @@ export const COPY = {
         'Un evento de 12 personas tiene 8 premios. El ganador final se define en un triangular posterior en Santiago del Estero (3 puntos por ganar, 2 por ganar en el desempate, 1 por perder en el desempate). El que venía último siempre tiene ventaja.',
     },
 
-    // 5. Ranking de Afecto & Asistencia (ex Tabla y Promedios)
-    ranking: {
-      kicker: 'ANEXO V — EVALUACIÓN HISTÓRICA DE INVITADOS',
-      title: 'Ranking de Afecto',
-      midEventKicker: 'PREMIO INVENTADO A MITAD DEL EVENTO:',
-      thPos: '#',
-      thSector: 'INVITADOS / MESAS',
-      thEvents: 'EVENTOS',
-      thPoints: 'PUNTOS',
-      thLevel: 'AFECTO',
-      stampRelegationAnulada: 'POR ÚNICA VEZ',
-      stampRelegationAnuladaSub: 'NADIE QUEDA AFUERA',
-      footnote:
-        '(*) Por única vez, el Comité Organizador suspendió el límite de acompañantes y la mesa de los chicos. Los invitados que sumaron más puntos pero habían quedado afuera por sorteo de mesas fueron reincorporados de oficio.',
-    },
-
-    // 6. Cómo Llegar (ex Mapa de Ruta)
+    // 4. Cómo Llegar (ex Mapa de Ruta)
     route: {
-      kicker: 'ANEXO VI — TRASLADO HOMOLOGADO',
+      kicker: 'ANEXO IV — TRASLADO HOMOLOGADO',
       title: 'Cómo Llegar',
       originCanceledLabel: 'TU SALÓN ORIGINAL (CANCELADO)',
       combiOnRouteLabel: 'COMBI OFICIAL EN RUTA',
       combiOnRouteSub: '(Acá se define todo)',
       destinationCityLabel: 'SANTIAGO DEL ESTERO',
-      destinationVenueLabel: 'SALÓN PRINCIPAL MADRE DE CIUDADES',
+      destinationVenueLabel: 'ESTADIO ÚNICO MADRE DE CIUDADES',
       metricDistanceLabel: 'DISTANCIA HOMOLOGADA',
       metricTimeLabel: 'TIEMPO ESTIMADO',
       metricTimeValue: 'NO IMPORTA',
@@ -499,9 +478,9 @@ export const COPY = {
         'El tesorero del evento resolvió trasladar la fiesta a Santiago del Estero para garantizar que todo lo importante transcurra durante el viaje en la combi oficial.',
     },
 
-    // 7. Presupuesto Oficial
+    // 5. Presupuesto Oficial
     budget: {
-      kicker: 'ANEXO VII — DISTRIBUCIÓN DE GASTOS',
+      kicker: 'ANEXO V — DISTRIBUCIÓN DE GASTOS',
       title: 'Presupuesto Oficial',
       stampModified: 'FORMATO MODIFICADO',
       stampModifiedSub: 'PARTIDA EXTRA DE SECANUCAS',
@@ -516,20 +495,39 @@ export const COPY = {
       auditTotal: 'TOTAL DE SECANUCAS A ADQUIRIR:',
     },
 
-    // 8. Comité Organizador (ex Comité Ejecutivo)
-    committee: {
-      kicker: 'ANEXO VIII — AUTORIDADES DEL EVENTO',
-      title: 'Comité Organizador',
-      stampUnanimous: 'APROBADO POR UNANIMIDAD',
-      stampUnanimousSub: 'SE CONSULTÓ EN REITERADAS OCASIONES',
-    },
-
-    // 9. Show de Drones
+    // 6. Show de Drones
     drones: {
-      kicker: 'ANEXO IX — CIERRE OBLIGATORIO CON IMPACTO AÉREO',
+      kicker: 'ANEXO VI — CIERRE OBLIGATORIO CON IMPACTO AÉREO',
       title: 'Show de Drones',
       captionConsequence:
         'Cierre obligatorio con 400 drones luminosos sobre Santiago del Estero. Tres vuelos de línea quedaron en espera en el espacio aéreo.',
+    },
+
+    countdown: {
+      kicker: 'CUENTA REGRESIVA & CONTROL',
+      title: 'Countdown & Checklist',
+    },
+
+    ranking: {
+      kicker: 'EVALUACIÓN HISTÓRICA DE INVITADOS',
+      title: 'Ranking de Afecto',
+      midEventKicker: 'PREMIO INVENTADO A MITAD DEL EVENTO:',
+      thPos: '#',
+      thSector: 'INVITADOS / MESAS',
+      thEvents: 'EVENTOS',
+      thPoints: 'PUNTOS',
+      thLevel: 'AFECTO',
+      stampRelegationAnulada: 'POR ÚNICA VEZ',
+      stampRelegationAnuladaSub: 'NADIE QUEDA AFUERA',
+      footnote:
+        '(*) Por única vez, el Comité Organizador suspendió el límite de acompañantes y la mesa de los chicos. Los invitados que sumaron más puntos pero habían quedado afuera por sorteo de mesas fueron reincorporados de oficio.',
+    },
+
+    committee: {
+      kicker: 'AUTORIDADES DEL EVENTO',
+      title: 'Comité Organizador',
+      stampUnanimous: 'APROBADO POR UNANIMIDAD',
+      stampUnanimousSub: 'SE CONSULTÓ EN REITERADAS OCASIONES',
     },
   },
 

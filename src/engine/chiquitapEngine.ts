@@ -520,31 +520,37 @@ export function generateChiquiTapPlan(input: GeneratePlanInput): ChiquiTapPlan {
   // Drone formations
   const droneFormations: DroneFormation[] = [
     {
+      id: 'sancor',
+      label: 'Sancor Seguros',
+      textValue: 'SANCOR SEGUROS',
+      caption: 'Figura 1/6 — Sponsor Oficial del show de drones (cláusula publicitaria homologada por el Comité)',
+    },
+    {
       id: 'copa',
       label: 'Premio de la Noche',
-      caption: 'Figura 1/5 — Premio del año entregado a mitad del evento (no da lugar en la mesa principal)',
+      caption: 'Figura 2/6 — Premio del año entregado a mitad del evento (no da lugar en la mesa principal)',
     },
     {
       id: 'estrella',
       label: 'Estrella Dorada',
-      caption: 'Figura 2/5 — Homenaje a la Mesa ★ de Paredes y Di María (evalúan no venir más)',
+      caption: 'Figura 3/6 — Homenaje a la Mesa ★ de Paredes y Di María (evalúan no venir más)',
     },
     {
       id: 'anfitriones',
       label: 'Anfitriones',
       textValue: droneHostWord,
-      caption: `Figura 3/5 — ${hostsScriptTitle} (divididos en dos grupos que no se cruzan)`,
+      caption: `Figura 4/6 — ${hostsScriptTitle} (divididos en dos grupos que no se cruzan)`,
     },
     {
       id: 'sde',
       label: 'Sede SDE',
       textValue: 'SDE',
-      caption: 'Figura 4/5 — Santiago del Estero, elegido por el tesorero del evento',
+      caption: 'Figura 5/6 — Santiago del Estero, elegido por el tesorero del evento',
     },
     {
       id: 'corazon',
       label: 'Unanimidad',
-      caption: 'Figura 5/5 — Se consultó en reiteradas ocasiones si estábamos todos de acuerdo',
+      caption: 'Figura 6/6 — Se consultó en reiteradas ocasiones si estábamos todos de acuerdo',
     },
   ];
 
