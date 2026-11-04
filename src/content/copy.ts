@@ -18,12 +18,12 @@ import type { EventType } from '../engine/types';
 export const COPY = {
   // Datos comunes y de identidad institucional
   common: {
-    brandName: 'ChiquiTap',
+    brandName: 'ChiquiTapp',
     brandWordmarkStar: '★',
     tagline: 'Organizamos tu evento como se organiza el fútbol argentino.',
     topbarBulletin: 'DESPACHO DEL COMITÉ ORGANIZADOR',
     footerDisclaimer:
-      'ChiquiTap es una parodia. No está afiliada a ninguna asociación, club ni federación. Ningún secanucas fue dañado.',
+      'ChiquiTapp es una parodia. No está afiliada a ninguna asociación, club ni federación. Ningún secanucas fue dañado.',
     officialVenue: 'Santiago del Estero (Salón Elegido por el Tesorero)',
     officialVenueDetail: 'Salón Principal Madre de Ciudades — Santiago del Estero',
     combiTitle: 'Combi Oficial (donde pasa todo lo verdaderamente importante)',
@@ -57,7 +57,7 @@ export const COPY = {
   // Pantalla de Inicio (Landing)
   landing: {
     kicker: 'SISTEMA INTEGRAL DE PLANIFICACIÓN HOMOLOGADA',
-    title: 'ChiquiTap',
+    title: 'ChiquiTapp',
     subtitle: 'Organizamos tu evento como se organiza el fútbol argentino.',
     btnSimpleTitle: 'Organización Simple',
     btnSimpleSub: 'rápida',
@@ -93,6 +93,45 @@ export const COPY = {
           'Reunión íntima de 8 ampliada a 30 invitados en dos mesas largas, con desempate por el postre.',
       },
     },
+  },
+
+  // Pantalla de Datos Iniciales (Protagonistas y Cantidad de Invitados)
+  eventDetails: {
+    kicker: 'ANEXO 0 — EXPEDIENTE INICIAL',
+    heading: 'Ficha de los Protagonistas',
+    subtitle:
+      'Información preliminar para la confección del padrón de mesas, show de drones y actas del Comité.',
+    backBtn: '← Cambiar tipo de evento',
+    labels: {
+      casamiento: {
+        hostsQuestion: '¿Quiénes se casan?',
+        hostsPlaceholder: 'Ej: Camila & Tomás',
+        hostsHint:
+          'Ambos serán distribuidos en dos grupos separados y no tendrán contacto visual hasta el desempate.',
+        guestsQuestion: 'Cantidad de invitados previstos',
+        defaultGuests: 120,
+      },
+      cumpleanos: {
+        hostsQuestion: '¿Quién cumple años?',
+        hostsPlaceholder: 'Ej: Martín',
+        hostsHint:
+          'Se le notificará la sorpresa 48 hs antes mediante circular oficial para garantizar el orden.',
+        guestsQuestion: 'Cantidad de invitados previstos',
+        defaultGuests: 24,
+      },
+      cena: {
+        hostsQuestion: '¿Quiénes son los anfitriones o comensales?',
+        hostsPlaceholder: 'Ej: Los pibes de los jueves',
+        hostsHint:
+          'Se dividirán en dos mesas largas estancas que competirán por el mismo centro de mesa.',
+        guestsQuestion: 'Cantidad de comensales previstos',
+        defaultGuests: 8,
+      },
+    },
+    guestsBureaucraticNote:
+      'Padrón provisorio. Por resolución unánime del Comité Organizador, la lista será ampliada de oficio para que el festejo sea más corto y garantizar cupos del interior.',
+    btnContinueSimple: 'CONTINUAR CON LA HOMOLOGACIÓN SIMPLE →',
+    btnContinueCustom: 'AVANZAR A CONSULTAS DEL COMITÉ →',
   },
 
   // Pantalla de Carga (Modalidad Simple)

@@ -33,7 +33,7 @@ export const InstitutionalTopBar: React.FC<TopBarProps> = ({
             type="button"
             className="topbar-brand-btn"
             onClick={onGoHome}
-            aria-label="Volver al inicio de ChiquiTap"
+            aria-label="Volver al inicio de ChiquiTapp"
           >
             <span className="topbar-script">{COPY.common.brandName}</span>
             <GoldStarsRow count={1} size={11} />

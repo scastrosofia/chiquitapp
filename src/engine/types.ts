@@ -25,6 +25,11 @@ export type MutationType =
   | 'agregar_supercopa'
   | 'refuerzo_secanucas_combi';
 
+export interface EventInitialDetails {
+  hosts: string;
+  baseGuests: number;
+}
+
 export interface UserAnswers {
   secanucasRequested: number;
   answersById: Record<string, boolean>;

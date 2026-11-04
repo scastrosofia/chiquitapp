@@ -25,6 +25,8 @@ export interface GeneratePlanInput {
   answers: UserAnswers;
   seed: number;
   formatNumber: number;
+  customHosts?: string;
+  customBaseGuests?: number;
   appliedMutations?: MutationType[];
 }
 
@@ -35,6 +37,8 @@ export function generateChiquiTapPlan(input: GeneratePlanInput): ChiquiTapPlan {
     answers,
     seed,
     formatNumber,
+    customHosts,
+    customBaseGuests,
     appliedMutations = [],
   } = input;
 
@@ -51,13 +55,49 @@ export function generateChiquiTapPlan(input: GeneratePlanInput): ChiquiTapPlan {
   const expedienteCode = COPY.results.expedienteCode(expedienteNum, anexosCount, mode === 'simple');
 
   const hostIndex = rng.int(0, template.hostsPool.length - 1);
-  const hostsScriptTitle = template.hostsPool[hostIndex];
-  const droneHostWord = template.droneInitialsPool[hostIndex] ?? '★ VIP ★';
+  const hostsScriptTitle =
+    customHosts && customHosts.trim().length > 0
+      ? customHosts.trim()
+      : template.hostsPool[hostIndex];
+
+  let droneHostWord: string;
+  if (customHosts && customHosts.trim().length > 0) {
+    const trimmed = customHosts.trim();
+    if (trimmed.includes('&') || trimmed.toLowerCase().includes(' y ')) {
+      const parts = trimmed.split(/&|\by\b/i).map((s) => s.trim()).filter(Boolean);
+      droneHostWord =
+        parts.length >= 2
+          ? `${parts[0][0].toUpperCase()} & ${parts[1][0].toUpperCase()}`
+          : trimmed.slice(0, 8).toUpperCase();
+    } else {
+      droneHostWord = trimmed.slice(0, 8).toUpperCase();
+    }
+  } else {
+    droneHostWord = template.droneInitialsPool[hostIndex] ?? '★ VIP ★';
+  }
+
   const eventDateCaption = rng.pick(COPY.common.datesPool);
+
+  const effectiveBaseGuests =
+    customBaseGuests && customBaseGuests > 0 ? customBaseGuests : template.baseGuests;
 
   // Participant inflation (always even)
   let inflatedGuests: number;
-  if (eventType === 'cena' && formatNumber === 1 && mode === 'personalizada') {
+  if (customBaseGuests && customBaseGuests > 0) {
+    if (eventType === 'cena') {
+      const mult = rng.int(3, 5);
+      const raw = Math.max(effectiveBaseGuests + 12, effectiveBaseGuests * mult);
+      inflatedGuests = raw % 2 === 0 ? raw : raw + 1;
+    } else if (eventType === 'casamiento') {
+      const mult = rng.int(6, 9);
+      const raw = Math.max(effectiveBaseGuests + 180, effectiveBaseGuests * mult);
+      inflatedGuests = raw % 2 === 0 ? raw : raw + 1;
+    } else {
+      const mult = rng.int(8, 12);
+      const raw = Math.max(effectiveBaseGuests + 120, effectiveBaseGuests * mult);
+      inflatedGuests = raw % 2 === 0 ? raw : raw + 1;
+    }
+  } else if (eventType === 'cena' && formatNumber === 1 && mode === 'personalizada') {
     inflatedGuests = 30; // Classic 8 -> 30 (two tables of 15)
   } else if (mode === 'simple') {
     const mid = Math.floor((template.minInflatedGuests + template.maxInflatedGuests) / 2);
@@ -73,7 +113,7 @@ export function generateChiquiTapPlan(input: GeneratePlanInput): ChiquiTapPlan {
       : `${Math.max(2, Math.round(perZoneGuests / 10))} Mesas Numeradas`;
 
   const inflationJustification = COPY.charts.distribution.inflationJustification(
-    template.baseGuests,
+    effectiveBaseGuests,
     inflatedGuests,
     mode === 'simple'
   );
@@ -513,8 +553,8 @@ export function generateChiquiTapPlan(input: GeneratePlanInput): ChiquiTapPlan {
     id: res.id,
     resolutionNumber: res.resNumber + idx * 10,
     boletinHeader: res.boletinHeader,
-    title: typeof res.title === 'function' ? res.title(template.hostsPool[0].split(' ')[0]) : res.title,
-    body: typeof res.body === 'function' ? res.body(template.hostsPool[0].split(' ')[0]) : res.body,
+    title: typeof res.title === 'function' ? res.title(hostsScriptTitle.split(' ')[0]) : res.title,
+    body: typeof res.body === 'function' ? res.body(hostsScriptTitle.split(' ')[0]) : res.body,
     impactSummary: res.impact,
     mutation: res.mutation,
     affectedSections: ['zonas', 'bracket', 'presupuesto', 'timeline'],
@@ -533,7 +573,7 @@ export function generateChiquiTapPlan(input: GeneratePlanInput): ChiquiTapPlan {
     hostsScriptTitle,
     eventDateCaption,
     venueOfficial: COPY.common.officialVenueDetail,
-    baseGuests: template.baseGuests,
+    baseGuests: effectiveBaseGuests,
     inflatedGuests,
     inflationJustification,
     combiManifesto: COPY.common.combiManifesto,

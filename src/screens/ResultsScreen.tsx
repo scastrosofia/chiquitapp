@@ -29,6 +29,8 @@ interface ResultsScreenProps {
   answers: UserAnswers;
   seed: number;
   formatNumber: number;
+  customHosts?: string;
+  customBaseGuests?: number;
   onReDrawFormat: () => void;
   onStartOver: () => void;
 }
@@ -39,6 +41,8 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
   answers,
   seed,
   formatNumber,
+  customHosts,
+  customBaseGuests,
   onReDrawFormat,
   onStartOver,
 }) => {
@@ -63,9 +67,11 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         answers,
         seed,
         formatNumber,
+        customHosts,
+        customBaseGuests,
         appliedMutations,
       }),
-    [eventType, mode, answers, seed, formatNumber, appliedMutations]
+    [eventType, mode, answers, seed, formatNumber, customHosts, customBaseGuests, appliedMutations]
   );
 
   // Trigger official rule-change popups as the user scrolls

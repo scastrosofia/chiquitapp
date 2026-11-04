@@ -46,7 +46,7 @@ export const LoadingCommitteeScreen: React.FC<LoadingCommitteeScreenProps> = ({
         <span className="sheet-kicker">{COPY.loading.kicker}</span>
 
         <div className="loading-icon-pulse">
-          <PlannerIcon name="combi" size={42} />
+          <PlannerIcon name="estrella" size={42} strokeColor="#C9A227" />
         </div>
 
         <h1 className="loading-title">{COPY.loading.title}</h1>
