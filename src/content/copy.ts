@@ -266,9 +266,13 @@ export const COPY = {
         id: 'un_solo_ganador_ramo',
         question: '¿Querés que haya un solo ganador del ramo?',
         subtitle: 'Definición de premios principales de la velada',
-        noWarning: 'Un único ganador resulta insuficiente para la representatividad del evento.',
+        targetChoice: 'no' as const,
+        yesWarning:
+          'Objeción del Comité Organizador: un único ganador resulta insuficiente para la representatividad del evento.',
+        noWarning:
+          'Objeción desestimada por el Comité: el ramo no admite definición individual.',
         responseAfterForcedYes:
-          'Lo agarran tres. Se define en un desempate en marzo.',
+          'Se sorteará entre la que lo agarre, la que lo sostenga más tiempo durante el casamiento y un participante elegido por la organización.',
       },
       {
         id: 'de_acuerdo_1',

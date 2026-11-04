@@ -16,6 +16,7 @@ interface CustomQuestionsScreenProps {
 type StepPhase =
   | 'idle'
   | 'forcing_yes'
+  | 'forcing_no'
   | 'approved'
   | 'numeric_followup'
   | 'post_banner';
@@ -71,12 +72,12 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
     }
   };
 
-  const finalizeYesApproval = () => {
+  const finalizeApproval = (forcedResult: boolean = true) => {
     if (!currentQ) return;
     soundEngine.playStamp();
     const updated = {
       ...recordedAnswers,
-      [currentQ.id]: true,
+      [currentQ.id]: forcedResult,
     };
     setRecordedAnswers(updated);
 
@@ -115,28 +116,54 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
     timersRef.current.push(t);
   };
 
+  const isTargetNo = currentQ?.targetChoice === 'no';
+
   const handleDirectYes = () => {
     if (phase !== 'idle' || !currentQ) return;
     soundEngine.unlockFromGesture();
-    finalizeYesApproval();
+
+    if (isTargetNo) {
+      // User clicked "Sí", but Committee forces "No"!
+      soundEngine.playWhistle();
+      setWarningMsg(
+        currentQ.yesWarning ||
+          'Objeción del Comité Organizador: un único ganador resulta insuficiente para la representatividad del evento.'
+      );
+      setPhase('forcing_no');
+
+      const t = window.setTimeout(
+        () => {
+          finalizeApproval(false);
+        },
+        prefersReduced ? 500 : 1200
+      );
+      timersRef.current.push(t);
+    } else {
+      finalizeApproval(true);
+    }
   };
 
   const handleAttemptNo = () => {
     if (phase !== 'idle' || !currentQ) return;
     soundEngine.unlockFromGesture();
-    soundEngine.playWhistle();
 
-    setWarningMsg(currentQ.noWarning);
-    setPhase('forcing_yes');
+    if (isTargetNo) {
+      // User directly clicked "No", which matches the committee target
+      finalizeApproval(false);
+    } else {
+      // User clicked "No", but Committee forces "Sí"!
+      soundEngine.playWhistle();
+      setWarningMsg(currentQ.noWarning);
+      setPhase('forcing_yes');
 
-    // Give time to see the Committee cursor travel to 'Sí' and register the warning
-    const t = window.setTimeout(
-      () => {
-        finalizeYesApproval();
-      },
-      prefersReduced ? 500 : 1200
-    );
-    timersRef.current.push(t);
+      const t = window.setTimeout(
+        () => {
+          finalizeApproval(true);
+        },
+        prefersReduced ? 500 : 1200
+      );
+      timersRef.current.push(t);
+    }
   };
 
   const handleConfirmSecanucas = (e: React.FormEvent) => {
@@ -179,6 +206,9 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
   const getNoButtonAnimate = () => {
     if (phase === 'idle') {
       return { x: 0, y: 0, scale: 1, rotate: 0, opacity: 1 };
+    }
+    if (phase === 'forcing_no') {
+      return prefersReduced ? { opacity: 1 } : { scale: [1, 1.07, 0.94, 1.04] };
     }
     if (prefersReduced) {
       return { opacity: 0.4 };
@@ -338,6 +368,8 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
                 animate={
                   phase === 'forcing_yes' && !prefersReduced
                     ? { scale: [1, 1.07, 0.94, 1.04] }
+                    : phase === 'forcing_no' && !prefersReduced
+                    ? { opacity: 0.52, scale: 0.92 }
                     : { scale: 1 }
                 }
                 transition={{ duration: 0.65 }}
@@ -350,7 +382,9 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
               <motion.button
                 type="button"
                 className={`answer-choice-btn is-no ${
-                  phase !== 'idle' && mechanic === 'morph_opposite'
+                  phase === 'forcing_no'
+                    ? 'is-auto-pressed'
+                    : phase !== 'idle' && mechanic === 'morph_opposite'
                     ? 'is-morphed'
                     : ''
                 }`}
@@ -376,6 +410,40 @@ export const CustomQuestionsScreen: React.FC<CustomQuestionsScreenProps> = ({
                       ? { left: '25%', top: '52%', opacity: 1 }
                       : {
                           left: ['74%', '25%', '25%'],
+                          top: ['68%', '48%', '52%'],
+                          opacity: [1, 1, 1],
+                          scale: [1.08, 1, 0.84],
+                        }
+                  }
+                  transition={{ duration: 0.95, ease: 'easeInOut' }}
+                  aria-hidden="true"
+                >
+                  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                    <path
+                      d="M5 3L22 12.5L14.2 15.2L18.5 23L15.2 24.6L10.9 16.8L5 21.5V3Z"
+                      fill="#1A1A1A"
+                      stroke="#FFFFFF"
+                      strokeWidth="1.5"
+                    />
+                  </svg>
+                  <span className="cursor-tag">{COPY.questions.cursorTag}</span>
+                </motion.div>
+              )}
+
+              {/* Animated Committee Cursor gliding from Sí to No */}
+              {phase === 'forcing_no' && (
+                <motion.div
+                  className="committee-auto-cursor"
+                  initial={
+                    prefersReduced
+                      ? { left: '74%', top: '52%', opacity: 1 }
+                      : { left: '25%', top: '68%', opacity: 0, scale: 1.1 }
+                  }
+                  animate={
+                    prefersReduced
+                      ? { left: '74%', top: '52%', opacity: 1 }
+                      : {
+                          left: ['25%', '74%', '74%'],
                           top: ['68%', '48%', '52%'],
                           opacity: [1, 1, 1],
                           scale: [1.08, 1, 0.84],

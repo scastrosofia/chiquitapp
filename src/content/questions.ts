@@ -14,7 +14,9 @@ export interface CustomQuestion {
   subtitle?: string;
   mandatory: boolean;
   mechanic: RejectionMechanic;
+  targetChoice?: 'yes' | 'no';
   noWarning: string;
+  yesWarning?: string;
   responseAfterForcedYes: string | ((requested: number, inflated: number) => string);
   postApprovalBanner?: string;
   numericFollowup?: {
@@ -48,7 +50,9 @@ export const ALL_CUSTOM_QUESTIONS: readonly CustomQuestion[] = COPY.questions.po
     subtitle: q.subtitle,
     mandatory: true,
     mechanic: mechanics[idx % mechanics.length],
+    targetChoice: 'targetChoice' in q ? q.targetChoice : undefined,
     noWarning: q.noWarning,
+    yesWarning: 'yesWarning' in q ? q.yesWarning : undefined,
     responseAfterForcedYes: q.responseAfterForcedYes,
     postApprovalBanner: 'postApprovalBanner' in q ? q.postApprovalBanner : undefined,
     numericFollowup: 'numericFollowup' in q ? q.numericFollowup : undefined,
@@ -74,13 +78,16 @@ export function buildQuestionSequence(seed: number): CustomQuestion[] {
   const amigoSalon = others.find((q) => q.id === 'amigo_salon')!;
   const drones = others.find((q) => q.id === 'show_drones')!;
   const secanucas = others.find((q) => q.id === 'necesitas_secanucas')!;
+  const ramo = others.find((q) => q.id === 'un_solo_ganador_ramo');
 
-  const remaining = others.filter(
-    (q) => !['invitas_paredes', 'invitas_dimaria', 'amigo_salon', 'show_drones', 'necesitas_secanucas'].includes(q.id)
-  );
+  const coreMandatory = [paredes, dimaria, amigoSalon, drones, secanucas];
+  if (ramo) coreMandatory.push(ramo);
+
+  const mandatoryIds = coreMandatory.map((q) => q.id);
+  const remaining = others.filter((q) => !mandatoryIds.includes(q.id));
 
   const shuffledRemaining = rng.shuffle(remaining);
-  const coreQuestions = rng.shuffle([paredes, dimaria, amigoSalon, drones, secanucas, ...shuffledRemaining]);
+  const coreQuestions = rng.shuffle([...coreMandatory, ...shuffledRemaining]);
 
   // Combined: core questions followed by the 3 consecutive "¿Estamos todos de acuerdo?"
   return [...coreQuestions, ...deAcuerdo];
