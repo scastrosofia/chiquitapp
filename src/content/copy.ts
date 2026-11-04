@@ -302,6 +302,17 @@ export const COPY = {
     acceptBtn: 'ACATAR Y REORDENAR EL EVENTO',
     pool: [
       {
+        id: 'res-clausula-jorgelina',
+        resNumber: 2911,
+        boletinHeader: 'CIRCULAR OFICIAL EXTRAORDINARIA — ARTÍCULO DE PRIVILEGIO',
+        title: 'RESOLUCIÓN N° 2911 — CLÁUSULA JORGELINA (ASIGNACIÓN DIRECTA DEL RAMO)',
+        body:
+          'Por decisión unánime del Comité Organizador, se aprueba la "Cláusula Jorgelina": la entrega del ramo de la fiesta (o distinción principal) queda exceptuada de cualquier competencia, sorteo o desempate general. Se adjudica de manera directa y en mano a persona amiga del coordinador de la fiesta vinculada a la Mesa ★ de Di María. Si alguien formula alguna objeción reglamentaria, se suspende la barra libre para todo el salón.',
+        impact:
+          'Se suspende el cuadro eliminatorio del ramo y se adjudica el premio por asignación directa con sello FORMATO MODIFICADO.',
+        mutation: 'reconfigurar_zonas' as const,
+      },
+      {
         id: 'res-premio-inventado',
         resNumber: 2847,
         boletinHeader: 'BOLETÍN OFICIAL EXTRAORDINARIO — DESDE LA COMBI',

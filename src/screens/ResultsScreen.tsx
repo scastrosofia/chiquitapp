@@ -74,6 +74,8 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
     [eventType, mode, answers, seed, formatNumber, customHosts, customBaseGuests, appliedMutations]
   );
 
+  const lastDismissedAtRef = useRef<number>(0);
+
   // Trigger official rule-change popups as the user scrolls
   useEffect(() => {
     const triggerResolutionAtIndex = (idx: number) => {
@@ -93,18 +95,28 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
       if (docHeight <= 100) return;
 
       const ratio = scrollTop / docHeight;
-      if (ratio > 0.26 && shownResolutionIdsRef.current.size === 0) {
+      const timeSinceDismiss = Date.now() - lastDismissedAtRef.current;
+
+      // First resolution: triggers only after scrolling into the timeline/distribution (ratio > 0.38)
+      if (ratio > 0.38 && shownResolutionIdsRef.current.size === 0) {
         triggerResolutionAtIndex(0);
-      } else if (ratio > 0.62 && shownResolutionIdsRef.current.size === 1) {
+      }
+      // Second resolution (CLÁUSULA JORGELINA): triggers further down (ratio > 0.68) after a pause
+      else if (
+        ratio > 0.68 &&
+        shownResolutionIdsRef.current.size === 1 &&
+        (lastDismissedAtRef.current === 0 || timeSinceDismiss > 3500)
+      ) {
         triggerResolutionAtIndex(1);
       }
     };
 
+    // Fallback timer: 22 seconds so the user can read the cover without being interrupted
     const fallbackTimer = window.setTimeout(() => {
-      if (shownResolutionIdsRef.current.size === 0) {
+      if (shownResolutionIdsRef.current.size === 0 && !activeModal) {
         triggerResolutionAtIndex(0);
       }
-    }, 5500);
+    }, 22000);
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
@@ -116,6 +128,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
   const handleAcceptResolution = (res: RuleChangeResolution) => {
     soundEngine.unlockFromGesture();
     soundEngine.playStamp();
+    lastDismissedAtRef.current = Date.now();
     setAppliedMutations((prev) =>
       prev.includes(res.mutation) ? prev : [...prev, res.mutation]
     );

@@ -560,7 +560,15 @@ export function generateChiquiTapPlan(input: GeneratePlanInput): ChiquiTapPlan {
     affectedSections: ['zonas', 'bracket', 'presupuesto', 'timeline'],
   }));
 
-  const scheduledResolutions = rng.shuffle(allResolutions);
+  const jorgelina = allResolutions.find((r) => r.id === 'res-clausula-jorgelina');
+  const others = allResolutions.filter((r) => r.id !== 'res-clausula-jorgelina');
+  const shuffledOthers = rng.shuffle(others);
+
+  const scheduledResolutions = [
+    shuffledOthers[0],
+    jorgelina || shuffledOthers[1],
+    ...shuffledOthers.slice(1),
+  ];
 
   return {
     eventType,
