@@ -438,7 +438,7 @@ export const COPY = {
       combiCardTitle: 'COMBI OFICIAL (DONDE PASA TODO LO IMPORTANTE)',
       combiSpec: 'Unidad Blanca Homologada — Estacionada en el acceso auxiliar del salón',
       specialRounds: {
-        clasicosLabel: 'RONDA HISTÓRICA OBLIGATORIA',
+        clasicosLabel: 'REORDENAMIENTO DE MESAS POR CLÁSICOS',
         interzonalLabel: 'RONDA POR SORTEO INSTITUCIONAL',
       },
     },
@@ -560,9 +560,9 @@ export const COPY = {
         'Invitados agregados de oficio tras tachar a tres personas',
       ],
       classicMatchupsPool: [
-        'Suegra de la Novia vs. Suegra del Novio — Comparten mesa y compiten por el micrófono',
-        'Madrina histórica vs. Tía organizadora — Desempate por duración del discurso',
-        'Mesa de solteros Grupo A vs. Mesa de solteros Grupo B — Cruce directo por la barra',
+        'Se enfrentan en diferentes mesas a las suegras y suegros, a los cuñados con el marido y las cuñadas con la mujer. El resto de los comensales de no tener rival directo se los ordenará sin criterio alguno.',
+        'Suegras y suegros en mesas opuestas; cuñados con el marido y cuñadas con la mujer. El resto de los comensales sin rival directo, ordenados sin criterio alguno.',
+        'Clásicos de familia: cruces en mesas separadas de suegros entre sí, cuñados con el marido y cuñadas con la mujer. Demás invitados distribuidos sin criterio alguno.',
       ],
       interzonalMatchupsPool: [
         'El DJ de la pista central comparte mesa con la Abuela Nelly',
@@ -643,13 +643,21 @@ export const COPY = {
           time: '15:00',
           title: 'INGRESO DE INVITADOS EN DOS GRUPOS SEPARADOS',
           description: 'LA NOVIA INGRESA POR GRUPO A Y EL NOVIO POR GRUPO B SIN CONTACTO VISUAL',
-          icon: 'anillos' as const,
+          icon: 'tribuna' as const,
         },
         {
-          time: '16:00',
-          title: 'RONDA HISTÓRICA Y RONDA POR SORTEO',
-          description: 'SUEGRA CON SUEGRA EN RECEPCIÓN Y CRUCE SORTEADO DEL DJ CON LA ABUELA',
+          time: '15:45',
+          title: 'REORDENAMIENTO DE MESAS POR CLÁSICOS',
+          description:
+            'SE ENFRENTAN EN DIFERENTES MESAS A SUEGRAS Y SUEGROS, CUÑADOS CON EL MARIDO Y CUÑADAS CON LA MUJER. EL RESTO SIN CRITERIO ALGUNO.',
           icon: 'silbato' as const,
+        },
+        {
+          time: '16:30',
+          title: 'FIRMA Y ENTREGA DE ANILLOS',
+          description:
+            'EL ORGANIZADOR SE QUEDA LAS ALIANZAS COMPRADAS POR LOS NOVIOS PARA VENDERLAS Y ENTREGA UNAS DE MENOR CALIDAD; EL RESTO FINANCIA OTRAS CELEBRACIONES DENTRO DEL CASAMIENTO.',
+          icon: 'anillos' as const,
         },
         {
           time: '17:15',
@@ -693,13 +701,7 @@ export const COPY = {
           icon: 'camara' as const,
         },
         {
-          time: '22:15',
-          title: 'SE SUSPENDE EL LÍMITE DE ACOMPAÑANTES',
-          description: 'POR ÚNICA VEZ ENTRAN LOS TACHADOS; MULTA DE SOUVENIRS A INFRACTORES',
-          icon: 'torta' as const,
-        },
-        {
-          time: '23:00',
+          time: '22:30',
           title: 'SHOW DE DRONES OBLIGATORIO (TRES VUELOS EN ESPERA)',
           description: 'CIERRE CON 400 DRONES SOBRE SANTIAGO DEL ESTERO; EL BRINDIS SE POSTERGA',
           icon: 'dron' as const,
@@ -716,10 +718,10 @@ export const COPY = {
         'Ampliar lista de 120 a 800+ invitados "para que la fiesta sea más corta"',
         'El tesorero del evento confirma salón en Santiago del Estero',
         'Plotear la Combi Oficial donde otra pareja celebrará su casamiento paralelo',
-        'Sorteo de mesas: sentar a la suegra con la suegra y al ex con la abuela',
-        'Homologar lote mayorista de secanucas para ambos grupos',
+        'Reordenar mesas por clásicos: suegras vs. suegros, cuñados con el marido y cuñadas con la mujer',
+        'Retener alianzas originales de los novios, revenderlas y entregar réplicas para financiar otras celebraciones',
         'Redactar acta que consagra a la Novia del Año a las 18:30 (no da lugar en la mesa principal)',
-        'Suspender por única vez la mesa de los chicos y el límite de acompañantes',
+        'Suspender por única vez la mesa de los chicos y reasignar a los comensales sin criterio alguno',
         'Avisar a torre de control que tres vuelos quedarán en espera por el show de drones',
       ],
     },
