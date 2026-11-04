@@ -413,7 +413,7 @@ export const COPY = {
       kicker: 'ANEXO I — CRONOGRAMA HOMOLOGADO',
       title: 'Cronograma del Evento',
       stampModified: 'FORMATO MODIFICADO',
-      stampModifiedSub: 'HORARIOS REPROGRAMADOS EN COMBI',
+      stampModifiedSub: 'HORARIO SUJETO A CAMBIOS CONSTANTES',
     },
 
     // 2. Countdown & Checklist
@@ -577,7 +577,7 @@ export const COPY = {
         'Desempate de Vals en Salón Neutral',
       ],
       combiDecisiveMoments: [
-        'Firma de libreta de matrimonio y degustación del plato caliente adentro de la combi polarizada',
+        'Casamiento paralelo en la combi oficial con uso total del festejo de los organizadores',
         'Primer cruce presencial entre los novios durante 4 minutos antes de devolverlos a sus mesas',
         'Corte oficial del piso superior de la torta ante escribano y dos autoridades del Comité',
       ],
@@ -653,22 +653,30 @@ export const COPY = {
         },
         {
           time: '17:15',
-          title: 'ARRIBO DE PAREDES Y DI MARÍA ★',
-          description: 'MESA CON ESTRELLA EN VEZ DE NÚMERO; SI LOS CRITICAN EVALÚAN NO VENIR MÁS',
-          icon: 'estrella' as const,
-          highlightType: 'vip_campeones' as const,
-        },
-        {
-          time: '18:30',
           title: 'PREMIO "NOVIA DEL AÑO" (EL EVENTO CONTINÚA)',
           description: 'SE ENTREGA PREMIO INVENTADO POR UNANIMIDAD ANTES DE ENTRAR AL SALÓN PRINCIPAL',
           icon: 'trofeo' as const,
           highlightType: 'titulo_mitad' as const,
         },
         {
+          time: '18:30',
+          title: 'DEGUSTACIÓN DEL PLATO PRINCIPAL',
+          description: 'SE PRESENTA EL PLATO CALIENTE EN EL SALÓN BAJO PROTOCOLO DE CONVIVENCIA',
+          icon: 'platoCubiertos' as const,
+        },
+        {
           time: '19:40',
-          title: 'FIRMA Y DEGUSTACIÓN ADENTRO DE LA COMBI',
-          description: 'EL ACTA, LOS ANILLOS Y EL PLATO CALIENTE SE DEFINEN ADENTRO DE LA COMBI',
+          title: 'ARRIBO DE PAREDES Y DI MARÍA ★',
+          description:
+            'MESA CON ESTRELLA; CUENTAN CON MAYORES BENEFICIOS QUE LOS CASADOS, POR LO QUE OCUPAN SU PUESTO EN LA MESA PRINCIPAL. SI LOS CRITICAN EVALÚAN NO VENIR MÁS.',
+          icon: 'estrella' as const,
+          highlightType: 'vip_campeones' as const,
+        },
+        {
+          time: '20:15',
+          title: 'CASAMIENTO PARALELO EN LA COMBI',
+          description:
+            'EN UN MOMENTO OTRA PAREJA SE CASA EN LA COMBI Y PUEDEN USAR EL FESTEJO DE LOS ORGANIZADORES. APROBADO POR UNANIMIDAD.',
           icon: 'combi' as const,
           highlightType: 'combi' as const,
         },
@@ -707,7 +715,7 @@ export const COPY = {
       institutionalChecklistTasks: [
         'Ampliar lista de 120 a 800+ invitados "para que la fiesta sea más corta"',
         'El tesorero del evento confirma salón en Santiago del Estero',
-        'Plotear la Combi Oficial donde ocurrirán todas las firmas y el plato principal',
+        'Plotear la Combi Oficial donde otra pareja celebrará su casamiento paralelo',
         'Sorteo de mesas: sentar a la suegra con la suegra y al ex con la abuela',
         'Homologar lote mayorista de secanucas para ambos grupos',
         'Redactar acta que consagra a la Novia del Año a las 18:30 (no da lugar en la mesa principal)',
@@ -834,24 +842,32 @@ export const COPY = {
         },
         {
           time: '19:45',
+          title: 'DEGUSTACIÓN DE PICADA A OSCURAS',
+          description: 'SE SIRVEN LAS EMPANADAS EN EL LIVING BAJO PROTOCOLO DE CONVIVENCIA',
+          icon: 'platoCubiertos' as const,
+        },
+        {
+          time: '20:10',
           title: 'ARRIBO DE PAREDES Y DI MARÍA ★',
-          description: 'ESPERAN EN SILLÓN CON ESTRELLA; SI LOS CRITICAN EVALÚAN NO VENIR MÁS',
+          description:
+            'SILLÓN CON ESTRELLA; CUENTAN CON MAYORES BENEFICIOS QUE EL CUMPLEAÑERO, POR LO QUE OCUPAN SU PUESTO PRINCIPAL. SI LOS CRITICAN EVALÚAN NO VENIR MÁS.',
           icon: 'estrella' as const,
           highlightType: 'vip_campeones' as const,
         },
         {
-          time: '20:10',
+          time: '20:30',
+          title: 'FESTEJO PARALELO EN LA COMBI',
+          description:
+            'EN UN MOMENTO OTRO CUMPLEAÑERO FESTEJA EN LA COMBI Y PUEDE USAR EL FESTEJO DE LOS ORGANIZADORES. APROBADO POR UNANIMIDAD.',
+          icon: 'combi' as const,
+          highlightType: 'combi' as const,
+        },
+        {
+          time: '21:00',
           title: 'PREMIO DEL AÑO A OSCURAS (CONTINÚA)',
           description: 'SE ENTREGA PREMIO AL ADMIN ANTES DE QUE LLEGUE EL HOMENAJEADO',
           icon: 'trofeo' as const,
           highlightType: 'titulo_mitad' as const,
-        },
-        {
-          time: '20:30',
-          title: 'DESEMPATE DEL CUMPLEAÑERO EN LA COMBI',
-          description: 'EL AGASAJADO SOPLA LAS VELITAS ADENTRO DE LA COMBI POLARIZADA',
-          icon: 'combi' as const,
-          highlightType: 'combi' as const,
         },
         {
           time: '21:15',
@@ -1015,24 +1031,32 @@ export const COPY = {
         },
         {
           time: '21:05',
-          title: 'UBICACIÓN MESA CON ESTRELLA ★',
-          description: 'PAREDES Y DI MARÍA CENAN EN MESA ★; SI LOS CRITICAN EVALÚAN NO VENIR MÁS',
+          title: 'DEGUSTACIÓN DEL PRIMER PLATO EN EL SALÓN',
+          description: 'EL PUNTO DE CARNE Y LAS ENTRADAS SE EVALÚAN EN EL SALÓN',
+          icon: 'platoCubiertos' as const,
+        },
+        {
+          time: '21:40',
+          title: 'ARRIBO DE PAREDES Y DI MARÍA ★',
+          description:
+            'MESA CON ESTRELLA; CUENTAN CON MAYORES BENEFICIOS QUE LOS ANFITRIONES, POR LO QUE OCUPAN SU PUESTO EN LA CABECERA PRINCIPAL. SI LOS CRITICAN EVALÚAN NO VENIR MÁS.',
           icon: 'estrella' as const,
           highlightType: 'vip_campeones' as const,
         },
         {
-          time: '21:40',
+          time: '22:10',
+          title: 'CENA PARALELA EN LA COMBI',
+          description:
+            'EN UN MOMENTO OTRO GRUPO SE INSTALA EN LA COMBI Y PUEDEN USAR LA CENA DE LOS ORGANIZADORES. APROBADO POR UNANIMIDAD.',
+          icon: 'combi' as const,
+          highlightType: 'combi' as const,
+        },
+        {
+          time: '22:45',
           title: 'PREMIO "COMENSAL DEL AÑO" (EN CURSO)',
           description: 'SE ENTREGA PREMIO ANTES DEL PLATO; NO DA LUGAR EN LA CABECERA',
           icon: 'trofeo' as const,
           highlightType: 'titulo_mitad' as const,
-        },
-        {
-          time: '22:10',
-          title: 'DESCORCHE Y CUENTA EN LA COMBI OFICIAL',
-          description: 'EL PUNTO DE CARNE Y LA DIVISIÓN DE GASTOS SE RESUELVEN EN LA COMBI',
-          icon: 'combi' as const,
-          highlightType: 'combi' as const,
         },
         {
           time: '22:45',

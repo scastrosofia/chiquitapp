@@ -256,10 +256,10 @@ export function generateChiquiTapPlan(input: GeneratePlanInput): ChiquiTapPlan {
       id: 'ms-simple-extra',
       fechaCode: 'ANEXO SIMPLE',
       time: '19:05',
-      title: 'REORDENAMIENTO DE MESAS EN LA COMBI',
-      description: 'POR ELEGIR "ORGANIZACIÓN SIMPLE" SE AGREGA UN DESEMPATE INTERMEDIO OBLIGATORIO',
-      icon: 'combi',
-      highlightType: 'combi',
+      title: 'REASIGNACIÓN DE MESAS INTERMEDIA',
+      description: 'POR ELEGIR "ORGANIZACIÓN SIMPLE" SE AGREGA UN DESEMPATE DE UBICACIONES EN EL SALÓN',
+      icon: 'silbato',
+      highlightType: 'modificado',
     });
   }
 
